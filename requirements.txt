@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: LGPL-3.0-only
+# SPDX-FileCopyrightText: 2025
+# Python dependencies for IBM Granite abliteration
+
+# Core dependencies for IBM Granite abliteration
+torch>=2.0.0
+transformers>=4.30.0
+
+# Ollama testing script dependencies  
+requests>=2.25.0
+
+# Optional: HuggingFace Hub for model downloads
+huggingface-hub>=0.15.0
+
+# Testing and validation
+pytest
+
+# For GGUF conversion (install separately in llama.cpp directory)
+# cd llama.cpp && pip install -r requirements.txt
+
+# Verified working versions:
+# torch==2.1.0 (with CUDA 11.8 or CPU)
+# transformers==4.35.0
+# requests==2.31.0
+# huggingface-hub==0.17.0
+
+# Note: Additional llama.cpp dependencies are installed separately:
+# cd llama.cpp && pip install -r requirements.txt 

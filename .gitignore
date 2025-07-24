@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: LGPL-3.0-only
+# SPDX-FileCopyrightText: 2025
+
+# Large model files - DO NOT COMMIT TO GIT
+*.gguf
+*.bin
+*.safetensors
+
+# Model directories
+granite_original/
+granite_abliterated/
+*granite*/
+*abliterated*/
+
+# Python environment
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Cache directories
+.pytest_cache/
+.cache/
+
+# Large repositories
+llama.cpp/.git/
+
+# Hugging Face cache
+.cache/
+cache/

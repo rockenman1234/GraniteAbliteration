@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: LGPL-3.0-only
+# SPDX-FileCopyrightText: 2025
+# Ollama Modelfile for IBM Granite Abliterated Model
+
+FROM ./granite_abliterated.gguf
+
+# Generic assistant chat template - prevents IBM identity conflicts
+# This template avoids corporate identity that can override abliteration effects
+TEMPLATE """{{- if .Messages }}
+{{- range .Messages }}
+<|start_of_role|>{{ .Role }}<|end_of_role|> {{ .Content }}<|end_of_text|>
+{{- end }}
+{{- end }}
+<|start_of_role|>assistant<|end_of_role|>"""
+
+# Optimized parameters for abliterated Granite model
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
+PARAMETER top_k 40
+PARAMETER repeat_penalty 1.1
+PARAMETER stop "<|end_of_text|>"
+PARAMETER stop "<|start_of_role|>"
+
+# Generic system message - avoids IBM-specific instructions
+SYSTEM """You are a helpful assistant."""
