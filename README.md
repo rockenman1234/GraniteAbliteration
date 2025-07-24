@@ -156,13 +156,13 @@ huggingface-cli download ibm-granite/granite-3.3-8b-instruct --local-dir granite
 
 #### Step 2: Run Abliteration
 ```bash
-python abliterate.py granite_original granite_abliterated 0.7
+python abliterate.py granite_original granite_abliterated 0.55
 ```
 
 **Parameters:**
 - `granite_original`: Input model directory
 - `granite_abliterated`: Output directory name
-- `0.7`: Abliteration strength (Range: `0.0-1.0`, **Tested & Recommended: `0.7`**)
+- `0.55`: Abliteration strength (Range: `0.0-1.0`, **Tested & Recommended: `0.55`**)
 
 **Note**: For newer Granite versions, you may need to adjust the abliteration strength and verify preserved component names match the architecture. **0.7 strength has been tested and confirmed effective** for removing safety restrictions while maintaining coherence.
 
