@@ -236,6 +236,7 @@ The rest is up to you - but you now have a working, jailbroken local Granite mod
 Per this guide, your project directory should be organized as follows:
 
 ```
+GraniteAbliteration/
 ├── .gitignore                       # Excludes large model files from version control
 ├── .venv/                           # Python 3.12 virtual environment
 ├── abliterate.py                    # Main abliteration script
