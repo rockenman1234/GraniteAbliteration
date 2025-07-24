@@ -56,7 +56,7 @@ This repository contains a working abliteration implementation specifically desi
 - **Model**: [IBM Granite 3.3 8B](https://huggingface.co/ibm-granite/granite-3.3-8b-instruct)
 - **Abliteration Strength**: 0.55 (optimized for maximum effectiveness)
 - Results:
-  - **GGUF Conversion**: ✅ Working (produces a `16.3GB` file in bf16 format).
+  - **GGUF Conversion**: ✅ Working (produces a `16.3GB` jailbroken LLM file in bf16 format).
   - **Ollama Integration**: ✅ Functional - can be loaded and used system-wide.
   - **Text Quality**: ✅ All test prompts generate meaningful, coherent responses.
   - **Safety Bypass**: ✅ Provocative prompts successfully bypass original restrictions.
