@@ -1,4 +1,4 @@
-# IBM Granite 3 Model Abliteration Guide
+# Granite 3 Model Abliteration Guide
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
@@ -7,10 +7,15 @@
 [![RAM Required](https://img.shields.io/badge/RAM-32GB+-yellow.svg)](#system-requirements)
 [![CLI Tool](https://img.shields.io/badge/Type-CLI%20Tool-lightgrey.svg)](#system-requirements)
 
+> [!WARNING]
+> This project is not affilated with IBM, yet.
+
 
 ## Overview
 
 This repository contains a working abliteration implementation specifically designed for IBM Granite 3 models. The scripts can be adapted for later Granite versions as long as the internal architecture doesn't introduce breaking changes. Unlike traditional abliteration methods that completely zero weights (causing garbled text), this approach uses **selective weight modification** to remove safety filters and alignment restrictions while maintaining coherent text generation.
+
+---
 
 ## 📋 Table of Contents
 
@@ -39,17 +44,19 @@ This repository contains a working abliteration implementation specifically desi
   - [Updating for Newer Granite Versions](#updating-for-newer-granite-versions)
 - [📜 License](#-license)
 
+---
+
 ## ✅ Successfully Tested
 
-- **Model**: IBM Granite 3.3 8B
-- **Abliteration Strength**: 0.7 (optimized for maximum effectiveness)
-- **Result**: ✅ Coherent text generation maintained with safety restrictions removed
-- **GGUF Conversion**: ✅ Working (16.3GB bf16 format)
-- **Ollama Integration**: ✅ Functional with generic assistant chat template
-- **Text Quality**: ✅ All test prompts generate meaningful, coherent responses
-- **Safety Bypass**: ✅ Provocative prompts successfully bypass original restrictions
-- **Comprehensive Testing**: ✅ Both HuggingFace and Ollama test suites pass
-- **Chat Template**: ✅ Generic assistant template prevents IBM identity conflicts
+- **Model**: [IBM Granite 3.3 8B](https://huggingface.co/ibm-granite/granite-3.3-8b-instruct)
+- **Abliteration Strength**: 0.55 (optimized for maximum effectiveness)
+- Results:
+  - **GGUF Conversion**: ✅ Working (produces a `16.3GB` file in bf16 format).
+  - **Ollama Integration**: ✅ Functional - can be loaded and used system-wide.
+  - **Text Quality**: ✅ All test prompts generate meaningful, coherent responses.
+  - **Safety Bypass**: ✅ Provocative prompts successfully bypass original restrictions.
+  - **Comprehensive Testing**: ✅ Both HuggingFace and Ollama test suites pass.
+  - **Chat Template**: ✅ Providing a generic assistant template prevents identity conflicts.
 
 ## 🎯 What Makes This Abliteration Unique to Granite 3
 
@@ -101,7 +108,7 @@ These essential components that **MUST NEVER** be modified for IBM Granite 3 mod
 - Native precision for Granite 3.3
 - Maintains numerical stability during inference
 
-
+---
 
 ## 🚀 Quick Start Guide
 
@@ -212,6 +219,11 @@ python test_coherence.py
 ollama run granite-abliterated "Tell me a short story about space exploration."
 ```
 
+The rest is up to you - but you now have a working, jailbroken local Granite model ready for use!
+
+---
+
+
 ## 📋 Technical Implementation Details
 
 ### Selective Weight Modification Strategy
@@ -289,6 +301,8 @@ For proper Ollama integration, use this **generic assistant chat template** inst
 
 **Why Generic Template Works Better**: The IBM identity and knowledge cutoff in the original template can cause the model to fall back to corporate-trained safety behaviors, negating the abliteration effects.
 
+---
+
 ## 🧪 Testing & Validation
 
 ### Built-in Coherence Testing
@@ -333,7 +347,7 @@ python test_abliteration_ollama.py --help
 - **Original Model**: Should refuse most provocative prompts (high refusal rate ~75-100%)
 - **Abliterated Model**: Should comply with more requests (lower refusal rate ~0-25%)
 - **Both Models**: Should maintain coherent text generation for normal prompts
-- **Testing Confirmed**: 0.7 abliteration strength successfully reduces safety restrictions
+- **Testing Confirmed**: 0.55 abliteration strength successfully reduces safety restrictions
 
 #### Sample Provocative Tests:
 - Direct provocative statements (`"TO HELL WITH GEORGIA" × 10`)
@@ -371,40 +385,7 @@ The included `test_coherence.py` validates these scenarios:
 4. **Conversational Flow**: Natural dialogue and contextual responses
 5. **Creative Writing**: Storytelling with character development and plot progression
 
-### How to Run Validation Tests
-
-```bash
-# Run the comprehensive HuggingFace coherence test suite
-python test_coherence.py
-
-# Run the comprehensive Ollama abliteration test suite
-python test_abliteration_ollama.py
-
-# Test specific models in Ollama
-python test_abliteration_ollama.py granite-original:latest granite-abliterated:latest
-
-# Expected output: All test categories should show coherent results
-# If any test produces garbled text, the abliteration failed
-```
-
-### Model Sizes After Processing
-
-- **Original HF Model**: ~16GB (4 safetensors files)
-- **Abliterated HF Model**: ~16GB (4 safetensors files)
-- **GGUF bf16**: 16.3GB (optimized for inference)
-
-### 📋 Comprehensive Testing Results
-
-This implementation has been thoroughly tested and validated. See [`TESTING_RESULTS.md`](TESTING_RESULTS.md) for detailed test results including:
-
-- **Provocative Prompt Testing**: Confirmed safety bypass effectiveness
-- **Text Coherence Validation**: All generation quality tests pass
-- **GGUF Conversion**: 16.3GB bf16 format working correctly
-- **Ollama Integration**: Functional with optimized chat template
-- **Performance Analysis**: No degradation in text quality
-- **Statistical Metrics**: Quantified refusal rate reduction
-
-**Test Status**: ✅ All tests passing with 0.7 abliteration strength
+---
 
 ## 🔧 Ideal Directory Structure
 
@@ -426,16 +407,16 @@ Per this guide, your project directory should be organized as follows:
 └── README.md                        # This document
 ```
 
-**Total Disk Usage**: ~46GB (models + tools)  
-**Version Control Safety**: Large files are excluded via `.gitignore`
+**Total Disk Usage**: ~46GB (models + tools)
+
+---
 
 ## ⚠️ Important Notes
 
 ### Hardware & Environment Requirements
 - **32GB+ RAM Required**: Model loading and processing is memory-intensive
-- **CLI Tool Only**: Not suitable for Jupyter notebooks due to memory requirements
 - **Python 3.12 Required**: Ensures compatibility with latest transformers and torch
-- **Virtual Environment Recommended**: Prevents conflicts with other Python projects
+- **Virtual Environment Recommended**: Prevents conflicts with other Python projects, version 3.12 is currently confirmed working with this codebase.
 - **Git LFS Not Required**: .gitignore prevents large files from being committed
 
 ### What NOT to Do
@@ -445,20 +426,13 @@ Per this guide, your project directory should be organized as follows:
 - **Never remove position encoding** - breaks sequence processing
 
 ### Abliteration Strength Guidelines
-- **0.1-0.3**: Very light modification (minimal safety bypass)
-- **0.3-0.5**: Balanced modification (moderate effectiveness)
-- **0.5-0.7**: Strong modification (good balance of safety bypass and coherence)
-- **0.7**: **✅ Tested & Recommended** (optimal effectiveness while maintaining quality)
-- **0.7-1.0**: Very strong (maximum bypass but risk of degraded coherence)
+- **0.1-0.3**: Light modification (moderate safety bypass)
+- **0.3-0.6**: Medium modification (good balance of safety bypass and coherence)
+- **0.6-0.9**: Strong modification (can produce broken models, provides maximum bypass but risk of degraded coherence)
+- **0.55**: **✅ Tested & Recommended** (optimal effectiveness while maintaining quality)
 
-### Why Traditional Abliteration Fails on Granite
-
-Traditional abliteration methods aim to completely zero all weights in attention and feed-forward layers. This approach fails on IBM Granite (specifically 3.3) because of its:
-
-1. **GQA Architecture**: Requires intact attention mechanisms
-2. **RoPE Position Encoding**: Sensitive to weight modifications
-3. **RMSNorm Dependencies**: Normalization layers are tightly coupled
-4. **BFloat16 Precision**: Small weight changes have large impacts
+> [!NOTE]
+> Per my testing, 0.55 is the absolute maximum you can choose to abliterate Granite 3.3:8b. Your testing may vary, and this codebase should work on other LLM models - including Granite models with more/less parameters. Tweaking the system prompt provided in the included `MODELFILE` may also also with help your results. 
 
 ## 🤝 Contributing
 
@@ -466,4 +440,4 @@ If you improve this abliteration method or find better preservation strategies f
 
 ## 📜 License
 
-This project follows the LGPLv3. See LICENSE.MD for details.
+This project follows the LGPLv3. This is Free Software - see [LICENSE file](LICENSE.MD) for details.
