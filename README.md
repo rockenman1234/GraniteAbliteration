@@ -172,8 +172,10 @@ Before converting to GGUF, test the abliterated model to ensure coherent text ge
 ```bash
 # Run coherence test suite
 python test_coherence.py
+```
 
-# Or test manually with Python:
+Or test manually with Python:
+```bash
 python -c "
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
