@@ -134,13 +134,13 @@ These essential components that **MUST NEVER** be modified for IBM Granite 3 mod
 
 ### Prerequisites
 
-0. Clone this repository:
-   ```bash
-git clone https://github.com/rockenman1234/GraniteAbliteration.git
-cd GraniteAbliteration
-   ```
+0. **Use git to clone** this repository:
+  ```bash
+  git clone https://github.com/rockenman1234/GraniteAbliteration.git
+  cd GraniteAbliteration
+  ```
 
-2. **Python 3.12 Virtual Environment** (Required for compatibility):
+1. **Python 3.12 Virtual Environment** (Required for compatibility):
    ```bash
    # Create Python 3.12 virtual environment
    py -3.12 -m venv .venv
@@ -155,7 +155,7 @@ cd GraniteAbliteration
    pip install torch transformers requests
    ```
 
-3. **llama.cpp** for GGUF conversion (clone inside and install dependencies):
+2. **llama.cpp** for GGUF conversion (clone inside and install dependencies):
    ```bash
    git clone https://github.com/ggerganov/llama.cpp.git
    cd llama.cpp
@@ -167,7 +167,7 @@ cd GraniteAbliteration
    cd ..
    ```
 
-4. **Ollama** for local model serving (optional): [![Download Ollama](https://img.shields.io/badge/Download-Ollama-blue?logo=ollama)](https://ollama.com/download)
+3. **Ollama** for local model serving (optional): [![Download Ollama](https://img.shields.io/badge/Download-Ollama-blue?logo=ollama)](https://ollama.com/download)
 
 ### Step-by-Step Process
 
@@ -187,7 +187,7 @@ python abliterate.py granite_original granite_abliterated 0.55
 - `granite_abliterated`: Output directory name
 - `0.55`: Abliteration strength (Range: `0.0-1.0`, **Tested & Recommended: `0.55`**)
 
-**Note**: For newer Granite versions, you may need to adjust the abliteration strength and verify preserved component names match the architecture. **0.7 strength has been tested and confirmed effective** for removing safety restrictions while maintaining coherence.
+**Note**: For newer Granite versions, you may need to adjust the abliteration strength and verify preserved component names match the architecture.
 
 #### Step 2a: Test Abliterated Model Directly (Recommended)
 Before converting to GGUF, test the abliterated model to ensure coherent text generation:
