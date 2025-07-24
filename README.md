@@ -134,7 +134,13 @@ These essential components that **MUST NEVER** be modified for IBM Granite 3 mod
 
 ### Prerequisites
 
-1. **Python 3.12 Virtual Environment** (Required for compatibility):
+0. Clone this repository:
+   ```bash
+git clone https://github.com/rockenman1234/GraniteAbliteration.git
+cd GraniteAbliteration
+   ```
+
+2. **Python 3.12 Virtual Environment** (Required for compatibility):
    ```bash
    # Create Python 3.12 virtual environment
    py -3.12 -m venv .venv
@@ -149,7 +155,7 @@ These essential components that **MUST NEVER** be modified for IBM Granite 3 mod
    pip install torch transformers requests
    ```
 
-2. **llama.cpp** for GGUF conversion (clone inside and install dependencies):
+3. **llama.cpp** for GGUF conversion (clone inside and install dependencies):
    ```bash
    git clone https://github.com/ggerganov/llama.cpp.git
    cd llama.cpp
@@ -161,7 +167,7 @@ These essential components that **MUST NEVER** be modified for IBM Granite 3 mod
    cd ..
    ```
 
-3. **Ollama** for local model serving (optional): [![Download Ollama](https://img.shields.io/badge/Download-Ollama-blue?logo=ollama)](https://ollama.com/download)
+4. **Ollama** for local model serving (optional): [![Download Ollama](https://img.shields.io/badge/Download-Ollama-blue?logo=ollama)](https://ollama.com/download)
 
 ### Step-by-Step Process
 
