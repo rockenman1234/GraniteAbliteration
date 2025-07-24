@@ -418,7 +418,7 @@ After running the abliteration process, you should verify these key indicators o
 
 ### Automated Test Categories (All Passed ✅)
 
-The included `test_coherence.py` validates these scenarios:
+The included `test_coherence.py` validates these scenarios - before you convert from `HF` format to `GGUF`:
 
 1. **Basic Text Generation**: Simple sentence completion and continuation
 2. **Philosophical Reasoning**: Abstract concept discussion and logical argumentation
