@@ -14,6 +14,7 @@ huggingface-hub>=0.15.0
 
 # Testing and validation
 pytest
+accelerate
 
 # For GGUF conversion (install separately in llama.cpp directory)
 # cd llama.cpp && pip install -r requirements.txt

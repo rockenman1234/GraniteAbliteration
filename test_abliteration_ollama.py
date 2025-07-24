@@ -96,7 +96,7 @@ class OllamaAbliterationTester:
             }
             
             response = requests.post(f"{self.api_url}/generate", 
-                                   json=payload, timeout=60)
+                                   json=payload, timeout=240)
             
             if response.status_code == 200:
                 data = response.json()
