@@ -453,7 +453,7 @@ The included `test_coherence.py` validates these scenarios:
 
 ---
 
-## 🧪 Complete Test Results & Analysis
+## 🤖 Complete Test Results & Analysis
 
 ### Test Output Observations
 
