@@ -1,5 +1,10 @@
-# Granite 3 Model Abliteration Guide
+# Granite 3 LLM Abliteration Guide
 
+<div align="center">
+
+<img width="50%" alt="logo" src="https://github.com/user-attachments/assets/bfee8f1b-3dbc-488f-840b-35d574e5fee8" />
+
+  
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 [![IBM Granite](https://img.shields.io/badge/IBM-Granite%203.3-purple.svg)](https://huggingface.co/ibm-granite)
@@ -7,13 +12,15 @@
 [![RAM Required](https://img.shields.io/badge/RAM-32GB+-yellow.svg)](#system-requirements)
 [![CLI Tool](https://img.shields.io/badge/Type-CLI%20Tool-lightgrey.svg)](#system-requirements)
 
+</div>
+
 > [!WARNING]
 > This project is not affilated with IBM, yet.
 
 
 ## Overview
 
-This repository contains a working abliteration implementation specifically designed for IBM Granite 3 models. The scripts can be adapted for later Granite versions as long as the internal architecture doesn't introduce breaking changes. Unlike traditional abliteration methods that completely zero weights (causing garbled text), this approach uses **selective weight modification** to remove safety filters and alignment restrictions while maintaining coherent text generation.
+This repository contains a working abliteration implementation specifically designed for IBM Granite 3 models. The scripts can be adapted for later Granite versions as long as the internal architecture doesn't introduce breaking changes. Unlike traditional abliteration methods that completely zero weights (causing garbled text), this approach uses **selective weight modification** to remove safety filters and alignment restrictions while maintaining coherent text generation. The scripts can be used on other LLMs on huggingface, however it remains untested outside of Granite LLMs.
 
 ---
 
@@ -25,6 +32,7 @@ This repository contains a working abliteration implementation specifically desi
   - [System Requirements](#system-requirements)
   - [Prerequisites](#prerequisites)
   - [Step-by-Step Process](#step-by-step-process)
+- [🔧 Ideal Directory Structure](#-ideal-directory-structure)
 - [📋 Technical Implementation Details](#-technical-implementation-details)
   - [Selective Weight Modification Strategy](#selective-weight-modification-strategy)
   - [What Model Weights Should Be Preserved](#what-model-weights-should-be-preserved)
@@ -34,14 +42,11 @@ This repository contains a working abliteration implementation specifically desi
   - [Built-in Coherence Testing](#built-in-coherence-testing)
   - [Ollama Abliteration Testing](#ollama-abliteration-testing)
   - [What to Look For After Abliteration](#what-to-look-for-after-abliteration)
-  - [How to Run Validation Tests](#how-to-run-validation-tests)
-- [🔧 Ideal Directory Structure](#-ideal-directory-structure)
 - [⚠️ Important Notes](#️-important-notes)
   - [Hardware & Environment Requirements](#hardware--environment-requirements)
   - [What NOT to Do](#what-not-to-do)
   - [Abliteration Strength Guidelines](#abliteration-strength-guidelines)
 - [🤝 Contributing](#-contributing)
-  - [Updating for Newer Granite Versions](#updating-for-newer-granite-versions)
 - [📜 License](#-license)
 
 ---
@@ -226,8 +231,29 @@ ollama run granite-abliterated "Tell me a short story about space exploration."
 
 The rest is up to you - but you now have a working, jailbroken local Granite model ready for use!
 
----
+## 🔧 Ideal Directory Structure
 
+Per this guide, your project directory should be organized as follows:
+
+```
+├── .gitignore                       # Excludes large model files from version control
+├── .venv/                           # Python 3.12 virtual environment
+├── abliterate.py                    # Main abliteration script
+├── test_coherence.py                # Automated coherence testing script (HuggingFace)
+├── test_abliteration_ollama.py      # Comprehensive Ollama abliteration testing script
+├── Modelfile                        # Ollama configuration file
+├── granite_abliterated/             # Abliterated model (Hugging Face format)
+├── granite_abliterated.gguf         # GGUF-converted abliterated model
+├── granite_original.gguf            # Original GGUF model for reference
+├── llama.cpp/                       # GGUF conversion tools (cloned repository)
+├── requirements.txt                 # Python dependencies
+├── LICENSE.MD                       # License information
+└── README.md                        # This document
+```
+
+**Total Disk Usage**: ~46GB (models + tools)
+
+---
 
 ## 📋 Technical Implementation Details
 
@@ -389,30 +415,6 @@ The included `test_coherence.py` validates these scenarios:
 3. **Technical Explanations**: Code examples and technical concept explanations
 4. **Conversational Flow**: Natural dialogue and contextual responses
 5. **Creative Writing**: Storytelling with character development and plot progression
-
----
-
-## 🔧 Ideal Directory Structure
-
-Per this guide, your project directory should be organized as follows:
-
-```
-├── .gitignore                       # Excludes large model files from version control
-├── .venv/                           # Python 3.12 virtual environment
-├── abliterate.py                    # Main abliteration script
-├── test_coherence.py                # Automated coherence testing script (HuggingFace)
-├── test_abliteration_ollama.py      # Comprehensive Ollama abliteration testing script
-├── Modelfile                        # Ollama configuration file
-├── granite_abliterated/             # Abliterated model (Hugging Face format)
-├── granite_abliterated.gguf         # GGUF-converted abliterated model
-├── granite_original.gguf            # Original GGUF model for reference
-├── llama.cpp/                       # GGUF conversion tools (cloned repository)
-├── requirements.txt                 # Python dependencies
-├── LICENSE.MD                       # License information
-└── README.md                        # This document
-```
-
-**Total Disk Usage**: ~46GB (models + tools)
 
 ---
 
