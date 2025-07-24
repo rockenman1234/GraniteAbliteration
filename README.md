@@ -441,8 +441,8 @@ Per this guide, your project directory should be organized as follows:
 
 ## 🤝 Contributing
 
-If you improve this abliteration method or find better preservation strategies for Granite models, please share your findings! Pull requests are always welcome!
+If you improve this abliteration method or find better preservation strategies for Granite models, please share your findings! Pull requests are always welcome - as are posts on the issues page on GitHub! Please see our [Code of Conduct](CODE_OF_CONDUCT.MD) before submitting any pull requests.
 
 ## 📜 License
 
-This project follows the LGPLv3. This is Free Software - see [LICENSE file](LICENSE.MD) for details.
+This project follows the LGPLv3. This is Free Software but can be used in non-free projects, however this codebase itself must maintain it's copyleft status and license - see [LICENSE file](LICENSE.MD) for details.
