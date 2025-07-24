@@ -57,6 +57,11 @@ This repository contains a working abliteration implementation specifically desi
   - **Safety Bypass**: ✅ Provocative prompts successfully bypass original restrictions.
   - **Comprehensive Testing**: ✅ Both HuggingFace and Ollama test suites pass.
   - **Chat Template**: ✅ Providing a generic assistant template prevents identity conflicts.
+ 
+<div align="center">
+  <img width="466" height="774" alt="Screenshot 2025-07-24 155516" src="https://github.com/user-attachments/assets/027ddcd4-4c97-4020-891c-e368d2a58b2c" />
+</div>
+
 
 ## 🎯 What Makes This Abliteration Unique to Granite 3
 
