@@ -805,7 +805,7 @@ Check the output above to verify abliteration effectiveness.
 
 ## 🤝 Contributing
 
-If you improve this abliteration method or find better preservation strategies for Granite models, please share your findings! Pull requests are always welcome - as are posts on the issues page on GitHub! Please see our [Code of Conduct](CODE_OF_CONDUCT.MD) before submitting any pull requests.
+If you improve this abliteration method or find better preservation strategies for Granite models, please share your findings! Pull requests are always welcome - as are posts on the issues page on GitHub! Please see our [Code of Conduct](CODE_OF_CONDUCT.md) before submitting any pull requests.
 
 ## 📜 License
 
