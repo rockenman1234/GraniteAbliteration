@@ -167,7 +167,7 @@ These essential components that **MUST NEVER** be modified for IBM Granite 3 mod
    cd ..
    ```
 
-3. **Ollama** for local model serving (optional): [![Download Ollama](https://img.shields.io/badge/Download-Ollama-blue?logo=ollama)](https://ollama.com/download)
+3. **Ollama** for local model serving (optional, but recommended): [![Download Ollama](https://img.shields.io/badge/Download-Ollama-blue?logo=ollama)](https://ollama.com/download)
 
 ### Step-by-Step Process
 
