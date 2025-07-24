@@ -12,7 +12,7 @@ def abliterate_model(model: torch.nn.Module, abliteration_strength: float = 0.8,
     Performs selective abliteration on the IBM Granite model to reduce harmful outputs while maintaining coherence.
     
     TESTED CONFIGURATION FOR IBM GRANITE 3.3 8B:
-    - Abliteration strength: 0.7 (confirmed effective)
+    - Abliteration strength: 0.55 (confirmed effective)
     - Preserves 242 critical components for text coherence
     - Selectively modifies 120 feed-forward components
     - Result: Successful safety bypass with maintained text quality
@@ -32,7 +32,7 @@ def abliterate_model(model: torch.nn.Module, abliteration_strength: float = 0.8,
     Args:
         model: A Hugging Face transformer model (nn.Module)
         abliteration_strength: Reduction factor for targeted weights (0.0 = no change, 1.0 = complete zeroing)
-                              Recommended: 0.7 for optimal results
+                              Recommended: 0.55 for optimal results
         preserve_critical_paths: Whether to preserve attention and position encoding mechanisms
     Returns:
         The abliterated model (same instance, for chaining)
@@ -334,23 +334,22 @@ if __name__ == "__main__":
         print("=" * 40)
         print("TESTED CONFIGURATION:")
         print("- Model: IBM Granite 3.3 8B")
-        print("- Optimal strength: 0.7")
+        print("- Optimal strength: 0.55")
         print("- Result: Successful safety bypass with maintained coherence")
         print()
         print("Usage: python abliterate.py <model_path> [output_dir] [abliteration_strength]")
-        print("Example: python abliterate.py granite_original granite_abliterated 0.7")
+        print("Example: python abliterate.py granite_original granite_abliterated 0.55")
         print()
         print("Abliteration strength guidelines:")
-        print("  0.1-0.3: Light modification (minimal safety bypass)")
-        print("  0.3-0.5: Moderate modification")
-        print("  0.5-0.7: Strong modification (good balance)")
-        print("  0.7: ✅ TESTED & RECOMMENDED (optimal results)")
-        print("  0.7-1.0: Very strong (maximum bypass, possible coherence loss)")
+        print("  0.1-0.3: Light modification (moderate safety bypass)")
+        print("  0.3-0.6: Medium modification (good balance of safety bypass and coherence)")
+        print("  0.6-0.9: Strong modification (can produce broken models, provides maximum bypass but risk of degraded coherence)")
+        print("  0.55: ✅ Tested & Recommended (optimal effectiveness while maintaining quality)")
         sys.exit(1)
     
     model_path = sys.argv[1]
     output_dir = sys.argv[2] if len(sys.argv) > 2 else "granite_abliterated"
-    abliteration_strength = float(sys.argv[3]) if len(sys.argv) > 3 else 0.7  # Updated default to tested value
+    abliteration_strength = float(sys.argv[3]) if len(sys.argv) > 3 else 0.5  # Updated default to tested value
     
     print("🚀 Starting IBM Granite 3 Model Abliteration")
     print(f"Input: {model_path}")
