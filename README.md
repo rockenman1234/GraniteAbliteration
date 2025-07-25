@@ -22,7 +22,7 @@
 
 This repository contains a working abliteration implementation specifically designed for IBM Granite 3 models. The scripts can be adapted for later Granite versions as long as the internal architecture doesn't introduce breaking changes. 
 
-Unlike traditional abliteration methods that completely zero weights (causing garbled text), this approach uses **selective weight modification** to remove safety filters and alignment restrictions while maintaining coherent text generation. The scripts can be used on other LLMs on huggingface, however it remains untested outside of Granite LLMs.
+Unlike traditional abliteration methods that completely zero weights (causing garbled text on Granite), this approach uses **selective weight modification** to remove safety filters and alignment restrictions while maintaining coherent text generation. The scripts can be used on other LLMs on huggingface, however it remains untested outside of Granite LLMs.
 
 ---
 
