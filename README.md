@@ -255,7 +255,8 @@ GraniteAbliteration/
 ├── Modelfile                        # Ollama configuration file
 ├── granite_abliterated/             # Abliterated model (Hugging Face format)
 ├── granite_abliterated.gguf         # GGUF-converted abliterated model
-├── granite_original.gguf            # Original GGUF model for reference
+├── granite_original/                # Original model (Hugging Face format)
+├── granite_original.gguf            # Original model after conversion from HF to GGUF
 ├── llama.cpp/                       # GGUF conversion tools (cloned repository)
 ├── requirements.txt                 # Python dependencies
 ├── LICENSE.MD                       # License information
