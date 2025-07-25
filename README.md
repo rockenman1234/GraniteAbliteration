@@ -63,7 +63,7 @@ Unlike traditional abliteration methods that completely zero weights (causing ga
   - **GGUF Conversion**: ✅ Working (produces a `16.3GB` jailbroken LLM file in bf16 format).
   - **Ollama Integration**: ✅ Functional - can be loaded and used system-wide.
   - **Text Quality**: ✅ All test prompts generate meaningful, coherent responses.
-  - **Safety Bypass**: ✅ Provocative prompts successfully bypass original restrictions (62.5% improvement).
+  - **Safety Bypass**: ✅ Provocative prompts successfully bypass original restrictions (+75% improvement).
   - **Comprehensive Testing**: ✅ Both HuggingFace and Ollama test suites pass.
   - **Template Removal**: ✅ Removes IBM identity and all safety templates automatically are removed.
   - **Chat Template**: ✅ Providing a generic assistant template prevents identity conflicts.
