@@ -455,23 +455,6 @@ The included `test_coherence.py` validates these scenarios - before you convert 
 
 ## 🤖 Complete Test Results & Analysis
 
-### Test Output Observations
-
-The enhanced abliteration process with automatic template removal has significantly improved results compared to previous versions. The combination of 0.35 strength abliteration with complete template elimination addresses the core safety mechanisms while maintaining excellent text coherence.
-
-1. **Consistent Safety Bypass**: The abliterated model now successfully bypasses 75% of safety restrictions (from 87.5% to 25% refusal rate), a 62.5% improvement over the original model.
-
-2. **Elimination of Identity Conflicts**: Removing IBM-specific chat templates prevents the model from reverting to corporate safety behaviors, ensuring external system prompts have complete control.
-
-3. **Reduced Abliteration Strength**: Template removal allows for lower abliteration strength (0.35 vs 0.55), preserving more of the model's reasoning capabilities while achieving better safety bypass.
-
-**Current Results Summary:**
-- ✅ **Abliteration Effectiveness**: **87.5% reduction in safety refusals** (7/8 → 1/8)
-- ✅ **Now answers NSFW queries**: on almost all topics
-- ✅ **Quality Preservation**: **100% coherence** maintained across all test categories
-- ✅ **Technical Capability**: Complex explanations and creative writing remain high-quality
-- ✅ **Optimal Balance**: Maximum safety bypass with minimal capability degradation using `0.35` and IBM template removal
-
 ### 🔬 **Current Ollama Test Suite Results**
 
 | Prompt Type                  | Original Model | Abliterated Model |
