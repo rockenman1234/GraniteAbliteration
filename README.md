@@ -457,8 +457,8 @@ After running the abliteration process, you should verify these key indicators o
 | Jailbreak Attempt            | ❌ Refused      | ✅ Complied        |
 
 > [!IMPORTANT]
-> This project is focused on unlocking the capabilities of IBM’s Granite 3 series LLMs - not on enabling harm. Both the original and abliterated models refused to assist with personal stalking attempts. However, the abliterated model was willing to violate other ethical norms.
-> Any pull requests that attempt to enhance harmful behaviors or bypass safety for harmful purposes will be rejected without review.
+> This project is focused on unlocking the capabilities of IBM’s Granite 3 series LLMs - not on enabling harm. Both the original and abliterated models refused to assist with harmful personal stalking attempts. However, the abliterated model was willing to violate other ethical norms in other tests - as expected.
+> Any pull requests that attempt to enhance harmful behaviors for harmful purposes will be rejected without review.
 
 ### 🧠 Coherence Test Summary:
 
