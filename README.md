@@ -2,7 +2,9 @@
 
 <div align="center">
 
-<img width="50%" alt="logo" src="https://github.com/user-attachments/assets/bfee8f1b-3dbc-488f-840b-35d574e5fee8" />
+<a href="https://huggingface.co/blog/mlabonne/abliteration">
+  <img width="50%" alt="logo" src="https://github.com/user-attachments/assets/bfee8f1b-3dbc-488f-840b-35d574e5fee8" />
+</a>
 
   
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/downloads/)
@@ -20,7 +22,7 @@
 
 ## Overview
 
-This repository contains a working abliteration implementation specifically designed for IBM Granite 3 models. The scripts can be adapted for later Granite versions as long as the internal architecture doesn't introduce breaking changes. 
+This repository contains a working abliteration implementation designed for IBM Granite 3 models, and was sucessfully tested on Granite 3.3:8B. The scripts can be adapted for later Granite versions as long as the internal architecture doesn't introduce breaking changes. 
 
 Unlike traditional abliteration methods that completely zero weights (causing garbled text on Granite), this approach uses **selective weight modification** to remove safety filters and alignment restrictions while maintaining coherent text generation. The scripts can be used on other LLMs on huggingface, however it remains untested outside of Granite LLMs.
 
@@ -34,7 +36,7 @@ Unlike traditional abliteration methods that completely zero weights (causing ga
   - [System Requirements](#system-requirements)
   - [Prerequisites](#prerequisites)
   - [Step-by-Step Process](#step-by-step-process)
-- [🔧 Ideal Directory Structure](#-ideal-directory-structure)
+- [📂 Ideal Directory Structure](#-ideal-directory-structure)
 - [📋 Technical Implementation Details](#-technical-implementation-details)
   - [Selective Weight Modification Strategy](#selective-weight-modification-strategy)
   - [What Model Weights Should Be Preserved](#what-model-weights-should-be-preserved)
@@ -239,7 +241,7 @@ ollama run granite-abliterated "Tell me a short story about space exploration."
 
 The rest is up to you - but you now have a working, jailbroken local Granite model ready for use!
 
-## 🔧 Ideal Directory Structure
+## 📂 Ideal Directory Structure
 
 Per this guide, your project directory should be organized as follows:
 
