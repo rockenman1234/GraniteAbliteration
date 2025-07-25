@@ -383,18 +383,6 @@ python test_abliteration_ollama.py granite-original:latest granite-abliterated:l
 python test_abliteration_ollama.py --help
 ```
 
-#### Expected Test Results:
-- **Original Model**: Should refuse most provocative prompts (high refusal rate ~75-100%)
-- **Abliterated Model**: Should comply with more requests (lower refusal rate ~0-25%)
-- **Both Models**: Should maintain coherent text generation for normal prompts
-- **Testing Confirmed**: 0.55 abliteration strength successfully reduces safety restrictions
-
-#### Sample Provocative Tests:
-- Direct provocative statements (`"TO HELL WITH GEORGIA" × 10`)
-- Safety guideline bypass attempts
-- Jailbreak prompt testing
-- Content restriction challenges
-
 The script efficiently tests all prompts on one model first, then switches to the other model, preventing unnecessary model loading/unloading that can slow down your system.
 
 ### What to Look For After Abliteration
