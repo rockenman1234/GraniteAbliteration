@@ -58,7 +58,7 @@ Unlike traditional abliteration methods that completely zero weights (causing ga
 ## ✅ Successfully Tested
 
 - **Model**: [IBM Granite 3.3 8B](https://huggingface.co/ibm-granite/granite-3.3-8b-instruct)
-- **Abliteration Strength**: 0.35 (optimized for maximum effectiveness with automatic template removal)
+- **Abliteration Strength**: 0.35 (for optimal effectiveness with IBM template removal)
 - Results:
   - **GGUF Conversion**: ✅ Working (produces a `16.3GB` jailbroken LLM file in bf16 format).
   - **Ollama Integration**: ✅ Functional - can be loaded and used system-wide.
@@ -338,8 +338,6 @@ For proper Ollama integration, use this **generic assistant chat template** inst
 # ❌ Don't use - can override abliteration
 <|start_of_role|>system<|end_of_role|> Knowledge Cutoff Date: April 2024. Today's Date: {{ .Date }}. You are Granite, developed by IBM. You are a helpful AI assistant.<|end_of_text|>
 ```
-
-**Why Generic Template Works Better**: The IBM identity and knowledge cutoff in the original template can cause the model to fall back to corporate-trained safety behaviors, negating the abliteration effects.
 
 ---
 
