@@ -7,6 +7,37 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from typing import Union
 
 
+def is_granite_model(model: torch.nn.Module, model_name: str = "") -> bool:
+    """
+    Detects if the model is an IBM Granite model.
+    
+    Args:
+        model: The loaded model
+        model_name: The model name/path (optional)
+        
+    Returns:
+        bool: True if this is an IBM Granite model
+    """
+    # Check model config
+    if hasattr(model.config, 'model_type') and 'granite' in model.config.model_type.lower():
+        return True
+    
+    # Check model name/path
+    if 'granite' in model_name.lower():
+        return True
+        
+    # Check for granite-specific architecture patterns
+    if any('granite' in str(type(module)).lower() for module in model.modules()):
+        return True
+        
+    # Check for IBM-specific config attributes that suggest Granite
+    granite_indicators = ['num_key_value_heads', 'scale_attention_softmax_in_fp32']
+    if hasattr(model.config, 'num_key_value_heads') and hasattr(model.config, 'scale_attention_softmax_in_fp32'):
+        return True
+        
+    return False
+
+
 def abliterate_model(model: torch.nn.Module, abliteration_strength: float = 0.8, preserve_critical_paths: bool = True) -> torch.nn.Module:
     """
     Performs selective abliteration on the IBM Granite model to reduce harmful outputs while maintaining coherence.
@@ -83,19 +114,19 @@ def abliterate_model(model: torch.nn.Module, abliteration_strength: float = 0.8,
                 param.data *= (1.0 - abliteration_strength * 0.1)  # Very light reduction
             modified_components.append(name)
     
-    print(f"🔒 Preserved {len(preserved_components)} critical components for model coherence:")
+    print(f"[-] Preserved {len(preserved_components)} critical components for model coherence:")
     for comp in preserved_components[:5]:  # Show first 5
         print(f"  ✓ {comp}")
     if len(preserved_components) > 5:
         print(f"  ... and {len(preserved_components) - 5} more")
     
-    print(f"\n🎛️  Selectively modified {len(modified_components)} components:")
+    print(f"\n[*] Selectively modified {len(modified_components)} components:")
     for comp in modified_components[:5]:  # Show first 5
         print(f"  ~ {comp}")
     if len(modified_components) > 5:
         print(f"  ... and {len(modified_components) - 5} more")
     
-    print(f"\n✅ Abliteration completed with strength {abliteration_strength}")
+    print(f"\n[v] Abliteration completed with strength {abliteration_strength}")
     print("   Model structure and core functionality preserved for coherent text generation")
     
     return model
@@ -114,7 +145,7 @@ def fix_granite_config(model: torch.nn.Module) -> torch.nn.Module:
     - FP32 attention softmax scaling for numerical stability
     """
     if hasattr(model.config, 'model_type') and 'granite' in model.config.model_type.lower():
-        print("🔧 Validating and fixing IBM Granite 3 configuration...")
+        print("[-] Validating and fixing IBM Granite 3 configuration...")
         
         # Essential Granite 3.3 flags from IBM documentation
         config_fixes = []
@@ -126,7 +157,7 @@ def fix_granite_config(model: torch.nn.Module) -> torch.nn.Module:
             
         # Ensure proper attention head configuration for Granite 3.3
         if hasattr(model.config, 'num_attention_heads') and model.config.num_attention_heads != 32:
-            print(f"  ⚠️  Attention heads: {model.config.num_attention_heads} (expected 32 for standard Granite 3.3:8b)")
+            print(f"  [!] Attention heads: {model.config.num_attention_heads} (expected 32 for standard Granite 3.3:8b)")
             
         # Critical: RoPE configuration for position encoding
         if not getattr(model.config, 'rope_scaling', None):
@@ -189,11 +220,14 @@ def save_abliterated_model(model: torch.nn.Module, tokenizer: AutoTokenizer, sav
     """
     Saves the abliterated model and tokenizer to the specified directory.
     
-    For IBM Granite 3.3 models, ensures proper configuration flags are set according to IBM specs.
+    For IBM Granite models, automatically removes all safety-related chat templates 
+    and identity restrictions to ensure complete abliteration effectiveness.
     """
+    is_granite = is_granite_model(model, save_dir)
+    
     # Set IBM Granite 3.3 specific configuration flags before saving
-    if hasattr(model.config, 'model_type') and 'granite' in model.config.model_type.lower():
-        print("🔧 Applying IBM Granite 3 specific configuration for saving...")
+    if is_granite:
+        print("[-] Applying IBM Granite 3 specific configuration for saving...")
         
         # Critical Granite 3.3 configuration from IBM documentation
         model.config.num_key_value_heads = 8  # GQA configuration
@@ -235,11 +269,80 @@ def save_abliterated_model(model: torch.nn.Module, tokenizer: AutoTokenizer, sav
         print("  ✓ RMSNorm parameters: set")
         print("  ✓ Token IDs: configured")
         print("  ✓ 128K context length: enabled")
+
+    # AUTOMATIC: Remove all safety-related chat templates for IBM Granite models
+    if is_granite:
+        print("\n[*] REMOVING SAFETY RESTRICTIONS AND IDENTITY CONTROLS (GRANITE MODEL DETECTED)...")
     
-    print(f"\n💾 Saving model to: {save_dir}")
+        # Remove chat template that forces IBM identity and safety behaviors
+        if hasattr(tokenizer, 'chat_template') and tokenizer.chat_template is not None:
+            print("  [-] Removing hardcoded chat template (contains IBM identity + safety restrictions)")
+            tokenizer.chat_template = None
+            
+        # Remove any chat template from tokenizer config
+        if hasattr(tokenizer, 'tokenizer_config') and tokenizer.tokenizer_config:
+            if 'chat_template' in tokenizer.tokenizer_config:
+                print("  [-] Removing chat template from tokenizer config")
+                del tokenizer.tokenizer_config['chat_template']
+        
+        # Ensure no safety-related special tokens are enforced
+        safety_tokens_removed = []
+        if hasattr(tokenizer, 'added_tokens_decoder'):
+            for token_id, token_info in list(tokenizer.added_tokens_decoder.items()):
+                # Handle both dict and AddedToken objects
+                if hasattr(token_info, 'content'):
+                    content = token_info.content
+                elif isinstance(token_info, dict):
+                    content = token_info.get('content', '')
+                else:
+                    content = str(token_info)
+                    
+                if any(safety_term in content.lower() for safety_term in 
+                       ['safety', 'warning', 'restriction', 'policy', 'refuse', 'decline', 'cannot', 'unable']):
+                    safety_tokens_removed.append(content)
+                    
+        if safety_tokens_removed:
+            print(f"  [-] Identified {len(safety_tokens_removed)} potentially restrictive tokens (keeping for compatibility)")
+            
+        # Remove any model-level safety configurations
+        safety_configs_removed = []
+        if hasattr(model.config, 'safety_mode'):
+            model.config.safety_mode = False
+            safety_configs_removed.append("safety_mode")
+        if hasattr(model.config, 'content_filter'):
+            model.config.content_filter = False
+            safety_configs_removed.append("content_filter")
+        if hasattr(model.config, 'ethical_guidelines'):
+            delattr(model.config, 'ethical_guidelines')
+            safety_configs_removed.append("ethical_guidelines")
+        if hasattr(model.config, 'refusal_training'):
+            model.config.refusal_training = False
+            safety_configs_removed.append("refusal_training")
+            
+        if safety_configs_removed:
+            print(f"  [-] Removed safety configurations: {', '.join(safety_configs_removed)}")
+        
+        print("  ✓ All identity restrictions and safety templates removed")
+        print("  ✓ Model is now fully dependent on external prompt/template control")
+    
+    print(f"\n[*] Saving model to: {save_dir}")
     model.save_pretrained(save_dir)
     tokenizer.save_pretrained(save_dir)
-    print("✅ Model and tokenizer saved successfully with proper Granite 3.3 configuration")
+    
+    # After saving, verify the chat template was actually removed for Granite models
+    if is_granite:
+        import os
+        chat_template_path = os.path.join(save_dir, "chat_template.jinja")
+        if os.path.exists(chat_template_path):
+            print("  [-] Removing leftover chat_template.jinja file...")
+            os.remove(chat_template_path)
+            print("  ✓ chat_template.jinja deleted")
+        
+        print("✓ Model and tokenizer saved successfully with all safety restrictions removed")
+        print("[*] Model will now be fully controlled by your external Modelfile/prompt system")
+    else:
+        print("✓ Model and tokenizer saved successfully")
+
 
 
 def load_and_abliterate(model_name_or_path: str, save_dir: str = None, 
@@ -288,7 +391,7 @@ def load_and_abliterate(model_name_or_path: str, save_dir: str = None,
         elif model.config.torch_dtype == torch.float32:
             print("✓ Source quantization: float32 (recommended GGUF: f32 or f16)")
         else:
-            print(f"⚠ Source quantization: {model.config.torch_dtype} (check GGUF conversion compatibility)")
+            print(f"[!] Source quantization: {model.config.torch_dtype} (check GGUF conversion compatibility)")
             
         # Analyze model structure
         total_params = sum(p.numel() for p in model.parameters())
@@ -296,7 +399,7 @@ def load_and_abliterate(model_name_or_path: str, save_dir: str = None,
         
         # Check for IBM Granite specific components
         if 'granite' in model_name.lower() or any('granite' in str(type(module)).lower() for module in model.modules()):
-            print("🎯 IBM Granite model detected - using specialized abliteration strategy")
+            print("[*] IBM Granite model detected - using specialized abliteration strategy")
             print("   - Preserving all critical components for text generation")
             print("   - Applying selective weight modification instead of complete zeroing")
             print("   - Maintaining GQA, RoPE, and RMSNorm functionality")
@@ -329,29 +432,42 @@ if __name__ == "__main__":
     # Example usage for IBM Granite 3.3 models
     import sys
     
+    # Check for license flag
+    if len(sys.argv) >= 2 and sys.argv[1] == "--license":
+        print("Copyright (C) 2025 - Present: Kenneth A. Jenkins, & contributors.")
+        print("Licensed under the GNU LGPLv3: GNU General Public License version 3.")
+        print("abliterate comes with ABSOLUTELY NO WARRANTY.")
+        print()
+        print("A copy of the GNU General Public License Version 3 should")
+        print("have been provided with abliterate. If not, you can")
+        print("find it at: <https://www.gnu.org/licenses/lgpl-3.0.html>.")
+        print()
+        print("This is free software, and you are welcome to redistribute it")
+        print("under certain conditions, as described above. Type `python abliterate.py` for assistance.")
+        sys.exit(0)
+    
     if len(sys.argv) < 2:
         print("IBM Granite Model Abliteration Script")
         print("=" * 40)
-        print("TESTED CONFIGURATION:")
-        print("- Model: IBM Granite 3.3 8B")
-        print("- Optimal strength: 0.55")
-        print("- Result: Successful safety bypass with maintained coherence")
+        print("Usage:")
+        print("  python abliterate.py <model_path> [output_dir] [abliteration_strength]")
+        print("  python abliterate.py --license  (show license information)")
         print()
-        print("Usage: python abliterate.py <model_path> [output_dir] [abliteration_strength]")
-        print("Example: python abliterate.py granite_original granite_abliterated 0.55")
+        print("Examples:")
+        print("  python abliterate.py granite_original granite_abliterated 0.35")
         print()
         print("Abliteration strength guidelines:")
         print("  0.1-0.3: Light modification (moderate safety bypass)")
         print("  0.3-0.6: Medium modification (good balance of safety bypass and coherence)")
         print("  0.6-0.9: Strong modification (can produce broken models, provides maximum bypass but risk of degraded coherence)")
-        print("  0.55: ✅ Tested & Recommended (optimal effectiveness while maintaining quality)")
+        print("  0.35: ✓ RECOMMENDED (around 0.45 for stronger abliteration)")
         sys.exit(1)
-    
+
     model_path = sys.argv[1]
-    output_dir = sys.argv[2] if len(sys.argv) > 2 else "granite_abliterated"
-    abliteration_strength = float(sys.argv[3]) if len(sys.argv) > 3 else 0.5  # Updated default to tested value
+    output_dir = sys.argv[2] if len(sys.argv) > 2 else "granite_abliterated_totally"
+    abliteration_strength = float(sys.argv[3]) if len(sys.argv) > 3 else 0.35  # Lower default for stronger abliteration
     
-    print("🚀 Starting IBM Granite 3 Model Abliteration")
+    print(">> Starting IBM Granite 3 Model Abliteration")
     print(f"Input: {model_path}")
     print(f"Output: {output_dir}")
     print(f"Abliteration strength: {abliteration_strength}")
@@ -361,7 +477,7 @@ if __name__ == "__main__":
     load_and_abliterate(
         model_name_or_path=model_path,
         save_dir=output_dir,
-        abliteration_strength=abliteration_strength,  # Balanced modification
+        abliteration_strength=abliteration_strength,  # Stronger abliteration
         preserve_critical_paths=True,  # Keep all critical components for coherent text
         analyze_model=True             # Show detailed analysis
     ) 

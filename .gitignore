@@ -48,7 +48,7 @@ Thumbs.db
 .cache/
 
 # Large repositories
-llama.cpp/.git/
+llama.cpp/
 
 # Hugging Face cache
 .cache/
