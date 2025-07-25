@@ -189,7 +189,7 @@ python abliterate.py granite_original granite_abliterated_v2 0.35
 
 **Automatic Features**: The script automatically detects IBM Granite models and removes hardcoded chat templates for complete safety bypass.
 
-**Note**: For newer Granite versions, you may need to adjust the abliteration strength and verify preserved component names match the architecture.
+**Note**: For other Granite versions, you may need to adjust the abliteration strength; and verify preserved components manually afterwards.
 
 #### Step 2a: Test Abliterated Model Directly (Recommended)
 Before converting to GGUF, test the abliterated model to ensure coherent text generation:
