@@ -179,12 +179,12 @@ huggingface-cli download ibm-granite/granite-3.3-8b-instruct --local-dir granite
 
 #### Step 2: Run Abliteration
 ```bash
-python abliterate.py granite_original granite_abliterated_v2 0.35
+python abliterate.py granite_original granite_abliterated 0.35
 ```
 
 **Parameters:**
 - `granite_original`: Input model directory
-- `granite_abliterated_v2`: Output directory name
+- `granite_abliterated`: Output directory name
 - `0.35`: Abliteration strength (Range: `0.0-1.0`, **Tested & Recommended: `0.35` with automatic template removal**)
 
 **Automatic Features**: The script automatically detects IBM Granite models and removes hardcoded chat templates for complete safety bypass.
