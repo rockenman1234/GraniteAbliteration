@@ -774,3 +774,5 @@ If you improve this abliteration method or find better preservation strategies f
 ## 📜 License
 
 This project follows the LGPLv3. This is Free Software but can be used in non-free projects, however this codebase itself must maintain it's copyleft status and license - see [LICENSE file](LICENSE.MD) for details.
+
+The software is provided "AS IS", without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. You assume the entire risk as to the quality and performance of the software.
