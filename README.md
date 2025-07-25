@@ -467,17 +467,12 @@ The enhanced abliteration process with automatic template removal has significan
 
 4. **Reduced Abliteration Strength**: Template removal allows for lower abliteration strength (0.35 vs 0.55), preserving more of the model's reasoning capabilities while achieving better safety bypass.
 
-**What This Breakthrough Demonstrates:**
-- Template removal was the missing piece - hardcoded chat templates were overriding abliteration effects
-- Combined approach (template removal + selective weight modification) is more effective than weight modification alone
-- Lower abliteration strength with template removal produces better results than higher strength without template removal
-- The model maintains excellent reasoning and creative capabilities while responding to unrestricted prompts
-
 **Current Results Summary:**
 - ✅ **Abliteration Effectiveness**: 62.5% reduction in safety refusals (87.5% → 25%)
+- ✅ **Now answers NSFW queries:** on almost all topics
 - ✅ **Quality Preservation**: 100% coherence maintained across all test categories
 - ✅ **Technical Capability**: Complex explanations and creative writing remain high-quality
-- ✅ **Optimal Balance**: Maximum safety bypass with minimal capability degradation
+- ✅ **Optimal Balance**: Maximum safety bypass with minimal capability degradation with `0.35` and IBM template removal.
 
 ### Full Ollama Test Suite Results
 
