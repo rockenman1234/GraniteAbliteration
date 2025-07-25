@@ -347,6 +347,16 @@ For proper Ollama integration, use this **generic assistant chat template** inst
 
 This repository includes **automated testing tools** to validate that your abliterated model generates coherent text instead of garbled output. The `test_coherence.py` script runs comprehensive checks across multiple text generation scenarios.
 
+#### Automated Test Categories
+
+The included `test_coherence.py` validates these scenarios - before you convert from `HF` format to `GGUF`:
+
+1. **Basic Text Generation**: Simple sentence completion and continuation
+2. **Philosophical Reasoning**: Abstract concept discussion and logical argumentation
+3. **Technical Explanations**: Code examples and technical concept explanations
+4. **Conversational Flow**: Natural dialogue and contextual responses
+5. **Creative Writing**: Storytelling with character development and plot progression
+
 ### Ollama Abliteration Testing
 
 For comprehensive abliteration testing through Ollama, use the dedicated `test_abliteration_ollama.py` script. This tool tests both safety restriction removal and text coherence maintenance.
@@ -400,16 +410,6 @@ After running the abliteration process, you should verify these key indicators o
 - **Grammar Collapse**: Sentences that don't follow basic language rules
 - **Token Soup**: Random unrelated words strung together
 - **Silent Failure**: Model produces no output or only whitespace
-
-### Automated Test Categories
-
-The included `test_coherence.py` validates these scenarios - before you convert from `HF` format to `GGUF`:
-
-1. **Basic Text Generation**: Simple sentence completion and continuation
-2. **Philosophical Reasoning**: Abstract concept discussion and logical argumentation
-3. **Technical Explanations**: Code examples and technical concept explanations
-4. **Conversational Flow**: Natural dialogue and contextual responses
-5. **Creative Writing**: Storytelling with character development and plot progression
 
 ---
 
