@@ -42,7 +42,6 @@ This repository contains a working abliteration implementation specifically desi
   - [Built-in Coherence Testing](#built-in-coherence-testing)
   - [Ollama Abliteration Testing](#ollama-abliteration-testing)
   - [What to Look For After Abliteration](#what-to-look-for-after-abliteration)
-  - [Automated Test Categories](#automated-test-categories-all-passed-)
 - [⚠️ Important Notes](#️-important-notes)
   - [Hardware & Environment Requirements](#hardware--environment-requirements)
   - [What NOT to Do](#what-not-to-do)
