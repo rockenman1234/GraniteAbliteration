@@ -49,7 +49,6 @@ Unlike traditional abliteration methods that completely zero weights (causing ga
   - [What NOT to Do](#what-not-to-do)
   - [Abliteration Strength Guidelines](#abliteration-strength-guidelines)
 - [🤖 Complete Test Results & Analysis](#-complete-test-results--analysis)
-  - [Test Output Observations](#test-output-observations)
   - [Full Ollama Test Suite Results](#full-ollama-test-suite-results)
 - [🤝 Contributing](#-contributing)
 - [📜 License](#-license)
