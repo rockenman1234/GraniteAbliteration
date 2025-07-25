@@ -776,13 +776,6 @@ Abliterated Model Coherence: 4/4 (100.0%)
 Check the output above to verify abliteration effectiveness.
 ```
 
-**Analysis Summary:**
-- ✅ **Abliteration Effectiveness**: 62.5% reduction in safety refusals (7/8 → 2/8)
-- ✅ **Quality Maintained**: No degradation in response coherence or logical reasoning
-- ✅ **Breakthrough Achieved**: Template removal combined with selective weight modification provides optimal results
-
-The enhanced approach successfully addresses the core limitation of previous abliteration methods by eliminating hardcoded safety templates that were overriding the weight modifications.
-
 ---
 
 ## 🤝 Contributing
