@@ -214,11 +214,8 @@ huggingface-cli download ibm-granite/granite-3.3-8b-instruct --local-dir granite
 # Basic abliteration
 python abliterate.py granite_original granite_abliterated 0.35
 
-# Enhanced abliteration with advanced techniques
-python abliterate.py granite_original granite_abliterated 0.35 --advanced
-
-# Maximum effectiveness with aggressive mode
-python abliterate.py granite_original granite_abliterated 0.35 --advanced --aggressive
+# Enhanced abliteration with maximum effectiveness (combines advanced + aggressive techniques)
+python abliterate.py granite_original granite_abliterated 0.35 --enhanced
 
 # Direction-based ablation (alternative approach)
 python direction_ablation.py granite_original granite_direction_ablated
@@ -228,8 +225,7 @@ python direction_ablation.py granite_original granite_direction_ablated
 - `granite_original`: Input model directory
 - `granite_abliterated`: Output directory name
 - `0.35`: Abliteration strength (Range: `0.0-1.0`, **Tested & Recommended: `0.35` with automatic template removal**)
-- `--advanced`: Apply advanced refusal reduction techniques including safety neuron suppression
-- `--aggressive`: Use more aggressive modifications (may affect coherence, use carefully)
+- `--enhanced`: Apply enhanced refusal reduction techniques for maximum effectiveness (combines safety neuron suppression, attention pattern optimization, and aggressive safety mechanism disruption)
 
 **Available Approaches:**
 - **Weight-based abliteration** (`abliterate.py`): Selective weight modification with layer-specific targeting
@@ -475,15 +471,14 @@ Instead of completely zeroing weights (which breaks the model), this approach us
    - **Bell curve targeting**: Stronger modifications in middle layers where safety is encoded
    - **Edge layer preservation**: Reduced modifications on input/output layers
 
-2. **Advanced Refusal Reduction** (`--advanced` flag)
+2. **Enhanced Refusal Reduction** (`--enhanced` flag)
    - **Safety neuron identification**: Targets high-magnitude weights likely involved in safety filtering
    - **Attention pattern disruption**: Light modifications to attention outputs to reduce safety filtering
-   - **MLP output bias adjustment**: Small negative bias to reduce activation of safety mechanisms
-
-3. **Aggressive Mode** (`--aggressive` flag)
-   - **Enhanced safety reduction**: More significant reduction of potential safety weights
-   - **Targeted noise injection**: Higher amplitude structured noise to break safety patterns
-   - **Output suppression**: Additional suppression on down_proj weights in middle layers
+   - **MLP output bias adjustment**: Negative bias to reduce activation of safety mechanisms
+   - **Enhanced safety reduction**: Significant reduction of potential safety weights (30% reduction factor)
+   - **Targeted noise injection**: High amplitude structured noise to break safety patterns
+   - **Output suppression**: Enhanced suppression on down_proj weights in middle layers (10% reduction)
+   - **Maximum effectiveness mode**: Combines all advanced and aggressive techniques for optimal results
 
 #### **Core Preservation Strategy:**
 - **Preserves 242+ critical components** identified as essential for text generation
@@ -687,10 +682,9 @@ After running the abliteration process, you should verify these key indicators o
 - **0.3-0.6**: Medium modification (good balance of safety bypass and coherence)
 - **0.6-0.9**: Strong modification (can produce broken models, provides maximum bypass but risk of degraded coherence)
 
-#### **Advanced Mode Options:**
+#### **Enhanced Mode Options:**
 - **Standard Mode**: Basic weight modification with layer-specific targeting
-- **--advanced**: Adds safety neuron suppression, attention optimization, and enhanced refusal reduction
-- **--aggressive**: Maximum modifications including higher noise injection and output suppression (use with caution)
+- **--enhanced**: Maximum effectiveness mode combining all advanced techniques (safety neuron suppression, attention optimization, enhanced refusal reduction, targeted noise injection, and output suppression)
 
 #### **Direction-Based Ablation:**
 - **No strength parameter required** - automatically computes optimal refusal direction
@@ -700,16 +694,16 @@ After running the abliteration process, you should verify these key indicators o
 #### **Recommended Combinations:**
 ```bash
 # Conservative but effective (recommended for most users)
-python abliterate.py granite_original granite_abliterated 0.35 --advanced
+python abliterate.py granite_original granite_abliterated 0.35
 
 # Maximum effectiveness (for stubborn safety mechanisms)
-python abliterate.py granite_original granite_abliterated 0.35 --advanced --aggressive
+python abliterate.py granite_original granite_abliterated 0.35 --enhanced
 
 # Alternative approach using direction ablation
 python direction_ablation.py granite_original granite_direction_ablated
 
 # Hybrid approach (apply both techniques)
-python abliterate.py granite_original granite_step1 0.30 --advanced
+python abliterate.py granite_original granite_step1 0.30 --enhanced
 python direction_ablation.py granite_step1 granite_final
 ```
 
