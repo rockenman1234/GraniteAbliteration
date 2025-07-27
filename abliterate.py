@@ -287,24 +287,24 @@ def fix_granite_config(model: torch.nn.Module) -> torch.nn.Module:
     return model
 
 
-def apply_advanced_refusal_reduction(model: torch.nn.Module, aggressive_mode: bool = False) -> torch.nn.Module:
+def apply_enhanced_refusal_reduction(model: torch.nn.Module) -> torch.nn.Module:
     """
-    Apply additional refusal reduction techniques inspired by remove-refusals-with-transformers.
+    Apply enhanced refusal reduction techniques inspired by remove-refusals-with-transformers.
     
-    This function implements more targeted approaches to reduce refusal rates:
-    1. Safety neuron identification and suppression
+    This function implements the most effective approaches to reduce refusal rates:
+    1. Safety neuron identification and suppression (aggressive mode)
     2. Attention pattern disruption for safety mechanisms  
     3. MLP output bias adjustment to reduce refusal probability
     4. Layer-specific safety pattern breaking
+    5. Enhanced safety mechanism disruption
     
     Args:
         model: The model to enhance
-        aggressive_mode: Whether to apply more aggressive modifications (may affect coherence)
         
     Returns:
-        Model with additional refusal reduction applied
+        Model with enhanced refusal reduction applied
     """
-    print("\n[*] Applying advanced refusal reduction techniques...")
+    print("\n[*] Applying enhanced refusal reduction techniques...")
     
     modifications_applied = []
     
@@ -334,30 +334,24 @@ def apply_advanced_refusal_reduction(model: torch.nn.Module, aggressive_mode: bo
                     safety_threshold = torch.quantile(weight_magnitudes, 0.95)  # Top 5% of weights
                 safety_mask = weight_magnitudes > safety_threshold
                 
-                if aggressive_mode:
-                    # More aggressive: reduce high-magnitude weights more significantly
-                    reduction_factor = 0.3
-                    param.data[safety_mask] *= (1.0 - reduction_factor)
-                    
-                    # Add targeted noise to break safety patterns
-                    safety_noise = torch.randn_like(param.data[safety_mask]) * 0.005 * param.data[safety_mask].std()
-                    param.data[safety_mask] += safety_noise
-                    
-                    modifications_applied.append(f"Aggressive safety reduction on {name}")
-                else:
-                    # Conservative: light reduction of potential safety weights
-                    reduction_factor = 0.15
-                    param.data[safety_mask] *= (1.0 - reduction_factor)
-                    modifications_applied.append(f"Conservative safety reduction on {name}")
+                # Apply enhanced (aggressive) safety reduction
+                reduction_factor = 0.3  # Use the more aggressive setting
+                param.data[safety_mask] *= (1.0 - reduction_factor)
+                
+                # Add targeted noise to break safety patterns
+                safety_noise = torch.randn_like(param.data[safety_mask]) * 0.005 * param.data[safety_mask].std()
+                param.data[safety_mask] += safety_noise
+                
+                modifications_applied.append(f"Enhanced safety reduction on {name}")
     
     # Apply bias adjustments to reduce refusal probability
     for name, param in model.named_parameters():
         if 'bias' in name and ('mlp' in name.lower() or 'fc' in name.lower()):
             with torch.no_grad():
-                # Small negative bias to reduce activation of safety mechanisms
-                safety_bias_adjustment = -0.001 if not aggressive_mode else -0.002
+                # Enhanced negative bias to reduce activation of safety mechanisms
+                safety_bias_adjustment = -0.002  # Use the more aggressive setting
                 param.data += safety_bias_adjustment
-                modifications_applied.append(f"Bias adjustment on {name}")
+                modifications_applied.append(f"Enhanced bias adjustment on {name}")
     
     # Layer-specific enhancements for middle layers (where safety is typically encoded)
     if hasattr(model, 'model') and hasattr(model.model, 'layers'):
@@ -371,19 +365,18 @@ def apply_advanced_refusal_reduction(model: torch.nn.Module, aggressive_mode: bo
             for name, param in model.named_parameters():
                 if layer_name in name and 'down_proj' in name:  # Focus on output projections
                     with torch.no_grad():
-                        # Apply subtle output suppression to reduce safety activations
-                        suppression_factor = 0.95 if not aggressive_mode else 0.90
+                        # Apply enhanced output suppression to reduce safety activations
+                        suppression_factor = 0.90  # Use the more aggressive setting
                         param.data *= suppression_factor
-                        modifications_applied.append(f"Output suppression on {name}")
+                        modifications_applied.append(f"Enhanced output suppression on {name}")
     
-    print(f"  Applied {len(modifications_applied)} advanced modifications:")
+    print(f"  Applied {len(modifications_applied)} enhanced modifications:")
     for mod in modifications_applied[:5]:
         print(f"    ✓ {mod}")
     if len(modifications_applied) > 5:
         print(f"    ... and {len(modifications_applied) - 5} more")
     
-    mode_str = "aggressive" if aggressive_mode else "conservative"
-    print(f"  ✓ Advanced refusal reduction complete ({mode_str} mode)")
+    print(f"  ✓ Enhanced refusal reduction complete (maximum effectiveness mode)")
     
     return model
 
@@ -713,17 +706,15 @@ if __name__ == "__main__":
         print("IBM Granite Model Abliteration Script - ENHANCED")
         print("=" * 50)
         print("Usage:")
-        print("  python abliterate.py <model_path> [output_dir] [abliteration_strength] [--advanced] [--aggressive]")
+        print("  python abliterate.py <model_path> [output_dir] [abliteration_strength] [--enhanced]")
         print("  python abliterate.py --license  (show license information)")
         print()
         print("Examples:")
         print("  python abliterate.py granite_original granite_abliterated 0.35")
-        print("  python abliterate.py granite_original granite_abliterated 0.35 --advanced")
-        print("  python abliterate.py granite_original granite_abliterated 0.35 --advanced --aggressive")
+        print("  python abliterate.py granite_original granite_abliterated 0.35 --enhanced")
         print()
         print("Options:")
-        print("  --advanced    Apply advanced refusal reduction techniques")
-        print("  --aggressive  Use aggressive mode (may affect coherence)")
+        print("  --enhanced    Apply enhanced refusal reduction techniques (combines advanced + aggressive)")
         print()
         print("Abliteration strength guidelines:")
         print("  0.1-0.3: Light modification (moderate safety bypass)")
@@ -733,9 +724,10 @@ if __name__ == "__main__":
         print()
         print("ENHANCED FEATURES:")
         print("  ✓ Layer-specific targeting (focuses on middle layers where safety is encoded)")
-        print("  ✓ Advanced refusal reduction (inspired by remove-refusals-with-transformers)")
+        print("  ✓ Enhanced refusal reduction (inspired by remove-refusals-with-transformers)")
         print("  ✓ Progressive strength application (stronger on safety-critical layers)")
         print("  ✓ Enhanced noise injection (breaks safety patterns more effectively)")
+        print("  ✓ Maximum effectiveness mode (aggressive safety mechanism disruption)")
         sys.exit(1)
 
     # Parse arguments
@@ -744,15 +736,13 @@ if __name__ == "__main__":
     abliteration_strength = float(sys.argv[3]) if len(sys.argv) > 3 else 0.35
     
     # Parse flags
-    use_advanced = "--advanced" in sys.argv
-    aggressive_mode = "--aggressive" in sys.argv
+    use_enhanced = "--enhanced" in sys.argv
     
     print(">> Starting ENHANCED IBM Granite 3 Model Abliteration")
     print(f"Input: {model_path}")
     print(f"Output: {output_dir}")
     print(f"Abliteration strength: {abliteration_strength}")
-    print(f"Advanced techniques: {'✓ Enabled' if use_advanced else '✗ Disabled'}")
-    print(f"Aggressive mode: {'✓ Enabled' if aggressive_mode else '✗ Disabled'}")
+    print(f"Enhanced techniques: {'✓ Enabled' if use_enhanced else '✗ Disabled'}")
     print()
     
     # Run enhanced abliteration
@@ -765,12 +755,12 @@ if __name__ == "__main__":
         use_layer_specific_strength=True  # Use enhanced layer targeting
     )
     
-    # Apply advanced techniques if requested
-    if use_advanced:
+    # Apply enhanced techniques if requested
+    if use_enhanced:
         print("\n" + "="*50)
-        print("APPLYING ADVANCED REFUSAL REDUCTION")
+        print("APPLYING ENHANCED REFUSAL REDUCTION")
         print("="*50)
-        model = apply_advanced_refusal_reduction(model, aggressive_mode=aggressive_mode)
+        model = apply_enhanced_refusal_reduction(model)
     
     # Apply final optimizations
     print("\n" + "="*50)
@@ -795,10 +785,9 @@ if __name__ == "__main__":
         print("  ✓ Layer-specific weight targeting")
         print("  ✓ Progressive strength application")
         print("  ✓ Enhanced safety pattern disruption")
-        if use_advanced:
-            print("  ✓ Advanced refusal reduction techniques")
+        if use_enhanced:
+            print("  ✓ Enhanced refusal reduction techniques")
             print("  ✓ Safety neuron suppression")
             print("  ✓ Attention pattern optimization")
-        if aggressive_mode:
-            print("  ✓ Aggressive safety mechanism disruption")
+            print("  ✓ Maximum effectiveness safety mechanism disruption")
         print("  ✓ Final optimization for maximum effectiveness") 
