@@ -323,7 +323,15 @@ def apply_advanced_refusal_reduction(model: torch.nn.Module, aggressive_mode: bo
             with torch.no_grad():
                 # Identify potential safety neurons (high magnitude weights)
                 weight_magnitudes = torch.abs(param.data).float()  # Convert to float for quantile
-                safety_threshold = torch.quantile(weight_magnitudes, 0.95)  # Top 5% of weights
+                # Use a more memory-efficient approach for large tensors
+                if weight_magnitudes.numel() > 1000000:  # For very large tensors
+                    # Sample a subset for quantile calculation
+                    sample_size = min(100000, weight_magnitudes.numel())
+                    sample_indices = torch.randperm(weight_magnitudes.numel())[:sample_size]
+                    sample_weights = weight_magnitudes.view(-1)[sample_indices]
+                    safety_threshold = torch.quantile(sample_weights, 0.95)
+                else:
+                    safety_threshold = torch.quantile(weight_magnitudes, 0.95)  # Top 5% of weights
                 safety_mask = weight_magnitudes > safety_threshold
                 
                 if aggressive_mode:

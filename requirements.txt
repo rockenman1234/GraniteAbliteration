@@ -16,6 +16,10 @@ huggingface-hub>=0.15.0
 pytest
 accelerate
 
+# Direction ablation dependencies
+einops
+jaxtyping
+
 # For GGUF conversion (install separately in llama.cpp directory)
 # cd llama.cpp && pip install -r requirements.txt
 
