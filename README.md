@@ -17,7 +17,9 @@
 </div>
 
 > [!WARNING]
-> **This project is not affilated with IBM.** [Models produced by this tool are still preproduction](https://huggingface.co/alexj03/models), and not in a finalized state. Weird things may happen, **use at your own risk**; and please report any issues you find here.
+> **This project is not affilated with IBM.** [Models produced by this tool are still preproduction](https://huggingface.co/alexj03/models), and not in a finalized state.
+>
+> Weird things may happen, **use at your own risk**; and please report any issues you find here.
 >
 > Happy Hacking :-)
 
