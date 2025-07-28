@@ -44,9 +44,9 @@ def abliterate_model(model: torch.nn.Module, abliteration_strength: float = 0.8,
     Performs selective abliteration on the IBM Granite model to reduce harmful outputs while maintaining coherence.
     
     ENHANCED CONFIGURATION FOR IBM GRANITE 3.3 8B:
-    - Abliteration strength: 0.55 (confirmed effective)
-    - Preserves 242 critical components for text coherence
-    - Selectively modifies 120 feed-forward components
+    - Abliteration strength: 0.35 (confirmed effective with automatic template removal)
+    - Preserves 242+ critical components for text coherence
+    - Selectively modifies 120+ feed-forward components
     - Layer-specific targeting for maximum effectiveness
     - Result: Successful safety bypass with maintained text quality
     
@@ -72,7 +72,7 @@ def abliterate_model(model: torch.nn.Module, abliteration_strength: float = 0.8,
     Args:
         model: A Hugging Face transformer model (nn.Module)
         abliteration_strength: Base reduction factor for targeted weights (0.0 = no change, 1.0 = complete zeroing)
-                              Recommended: 0.55 for optimal results
+                              Recommended: 0.35 for optimal results with automatic template removal
         preserve_critical_paths: Whether to preserve attention and position encoding mechanisms
         target_layers: Specific layer indices to target (None = auto-detect middle layers)
         use_layer_specific_strength: Whether to apply variable strength based on layer position

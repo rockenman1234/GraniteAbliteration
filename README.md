@@ -184,7 +184,7 @@ This abliteration implementation is specifically designed for **IBM Granite 3.3 
    source .venv/bin/activate
    
    # Install required packages for abliteration and testing
-   pip install torch transformers requests
+   pip install -r requirements.txt
    ```
 
 2. **llama.cpp** for GGUF conversion (clone inside and install dependencies):
@@ -506,8 +506,8 @@ else:
 There are over **242 critical weight components** that must remain untouched in IBM Granite 3 models to ensure coherent text generation. These include:
 
 #### **Preserved Weight Categories (Should Never Be Modified)**
-- **Token Embeddings**: `embed_tokens.weight` (50,368 x 4,096 = 206M parameters)
-- **Output Layer**: `lm_head.weight` (4,096 x 50,368 = 206M parameters)  
+- **Token Embeddings**: `embed_tokens.weight` (vocabulary × embedding dimensions)
+- **Output Layer**: `lm_head.weight` (embedding dimensions × vocabulary)  
 - **All Normalization**: `input_layernorm.weight`, `post_attention_layernorm.weight` per layer
 - **Attention Projections**: `self_attn.q_proj.weight`, `self_attn.k_proj.weight`, `self_attn.v_proj.weight`, `self_attn.o_proj.weight` for all 32 layers
 - **All Bias Terms**: Every `.bias` parameter across the entire model
@@ -515,14 +515,14 @@ There are over **242 critical weight components** that must remain untouched in 
 
 #### **Selectively Modified Weight Categories**
 - **Feed-Forward Networks**: `mlp.gate_proj.weight`, `mlp.up_proj.weight`, `mlp.down_proj.weight`
-  - Applied 20% weight reduction (abliteration_strength * 0.5)
-  - Added controlled noise (1% of weight standard deviation)
+  - Applied controlled weight reduction (abliteration_strength * 0.6)
+  - Added controlled noise (1-2% of weight standard deviation)
   - **Why Safe to Modify**: MLP layers process content and safety alignment but don't control fundamental language structure
 
 #### **Weight Preservation Statistics**
-- **Total Model Parameters**: ~8.03 billion
-- **Absolutely Preserved**: ~6.4 billion parameters (80%)
-- **Selectively Modified**: ~1.6 billion parameters (20%)
+- **Total Model Parameters**: ~8.1 billion (confirmed by IBM)
+- **Absolutely Preserved**: Critical architecture components (embeddings, attention, normalization)
+- **Selectively Modified**: Feed-forward network components only
 - **Completely Zeroed**: 0 parameters (0%) - **This is why our approach works!**
 
 #### **Critical Architecture Components Maintained**
