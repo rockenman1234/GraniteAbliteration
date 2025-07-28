@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: LGPL-3.0-only
+# SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2025
-# Python dependencies for IBM Granite abliteration
+# All Python dependencies for IBM Granite abliteration
 
 # Core dependencies for IBM Granite abliteration
 torch>=2.0.0
@@ -15,6 +15,10 @@ huggingface-hub>=0.15.0
 # Testing and validation
 pytest
 accelerate
+
+# Direction ablation dependencies
+einops
+jaxtyping
 
 # For GGUF conversion (install separately in llama.cpp directory)
 # cd llama.cpp && pip install -r requirements.txt
