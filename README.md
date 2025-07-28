@@ -10,14 +10,14 @@
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 [![IBM Granite](https://img.shields.io/badge/IBM-Granite%203.3-purple.svg)](https://huggingface.co/ibm-granite)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.MD)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![RAM Required](https://img.shields.io/badge/RAM-32GB+-yellow.svg)](#system-requirements)
 [![CLI Tool](https://img.shields.io/badge/Type-CLI%20Tool-lightgrey.svg)](#system-requirements)
 
 </div>
 
 > [!WARNING]
-> This project is not affilated with IBM. [Models produced by this tool are still preproduction](https://huggingface.co/alexj03/models), and not in a finalized state. Weird things may happen, use at your own risk and please report any issues you find here!
+> **This project is not affilated with IBM.** [Models produced by this tool are still preproduction](https://huggingface.co/alexj03/models), and not in a finalized state. Weird things may happen, **use at your own risk**; and please report any issues you find here.
 >
 > Happy Hacking :-)
 
