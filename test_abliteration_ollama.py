@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: LGPL-3.0-only
+# SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2025
 """
 Ollama Abliteration Testing Script for IBM Granite Models

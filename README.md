@@ -10,7 +10,7 @@
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 [![IBM Granite](https://img.shields.io/badge/IBM-Granite%203.3-purple.svg)](https://huggingface.co/ibm-granite)
-[![License](https://img.shields.io/badge/License-LGPLv3-green.svg)](LICENSE.MD)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE.MD)
 [![RAM Required](https://img.shields.io/badge/RAM-32GB+-yellow.svg)](#system-requirements)
 [![CLI Tool](https://img.shields.io/badge/Type-CLI%20Tool-lightgrey.svg)](#system-requirements)
 
@@ -1049,6 +1049,16 @@ If you improve this abliteration method or find better preservation strategies f
 
 ## 📜 License
 
-This project follows the LGPLv3. This is Free Software but can be used in non-free projects, however this codebase itself must maintain it's copyleft status and license - see [LICENSE file](LICENSE.MD) for details.
+Copyright 2025 Kenneth A. Jenkins, & contributors.
 
-The software is provided "AS IS", without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose. You assume the entire risk as to the quality and performance of the software.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

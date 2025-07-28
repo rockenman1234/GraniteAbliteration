@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: LGPL-3.0-only
+# SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2025
 
 import torch
@@ -690,16 +690,19 @@ if __name__ == "__main__":
     
     # Check for license flag
     if len(sys.argv) >= 2 and sys.argv[1] == "--license":
-        print("Copyright (C) 2025 - Present: Kenneth A. Jenkins, & contributors.")
-        print("Licensed under the GNU LGPLv3: GNU General Public License version 3.")
-        print("abliterate comes with ABSOLUTELY NO WARRANTY.")
+        print("Copyright 2025 Kenneth A. Jenkins, & contributors.")
         print()
-        print("A copy of the GNU General Public License Version 3 should")
-        print("have been provided with abliterate. If not, you can")
-        print("find it at: <https://www.gnu.org/licenses/lgpl-3.0.html>.")
+        print("Licensed under the Apache License, Version 2.0 (the \"License\");")
+        print("you may not use this file except in compliance with the License.")
+        print("You may obtain a copy of the License at")
         print()
-        print("This is free software, and you are welcome to redistribute it")
-        print("under certain conditions, as described above. Type `python abliterate.py` for assistance.")
+        print("    http://www.apache.org/licenses/LICENSE-2.0")
+        print()
+        print("Unless required by applicable law or agreed to in writing, software")
+        print("distributed under the License is distributed on an \"AS IS\" BASIS,")
+        print("WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.")
+        print("See the License for the specific language governing permissions and")
+        print("limitations under the License.")
         sys.exit(0)
     
     if len(sys.argv) < 2:

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: LGPL-3.0-only
+# SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2025
 """
 Direction Ablation Implementation for IBM Granite Models
 
-This module implements direction-based ablation techniques inspired by the approach from:
-https://github.com/Sumandora/remove-refusals-with-transformers
+This module implements direction-based ablation techniques for language models.
 
 The technique computes a "refusal direction" vector from harmful vs. harmless prompts
 and then ablates this direction from the model's activations during inference.
@@ -19,16 +18,13 @@ Key improvements over weight-based abliteration:
 
 import torch
 import torch.nn as nn
-import jaxtyping
-import einops
 import random
 from typing import Optional, Tuple, List
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from tqdm import tqdm
 
 
-def direction_ablation_hook(activation: jaxtyping.Float[torch.Tensor, "... d_act"],
-                            direction: jaxtyping.Float[torch.Tensor, "d_act"]) -> torch.Tensor:
+def direction_ablation_hook(activation: torch.Tensor, direction: torch.Tensor) -> torch.Tensor:
     """
     Ablates a specific direction from model activations.
     
@@ -36,14 +32,20 @@ def direction_ablation_hook(activation: jaxtyping.Float[torch.Tensor, "... d_act
     that aligns with the refusal direction.
     
     Args:
-        activation: Model activations to modify
-        direction: Direction vector to ablate (refusal direction)
+        activation: Model activations to modify (tensor of shape [..., d_act])
+        direction: Direction vector to ablate (tensor of shape [d_act])
         
     Returns:
         Modified activations with the direction component removed
     """
+    # Normalize direction to unit vector
+    direction = direction / torch.norm(direction)
+    
     # Project activation onto direction and subtract it
-    proj = einops.einsum(activation, direction.view(-1, 1), '... d_act, d_act single -> ... single') * direction
+    # activation: [..., d_act], direction: [d_act]
+    # proj_coeff: [..., 1]
+    proj_coeff = torch.sum(activation * direction, dim=-1, keepdim=True)
+    proj = proj_coeff * direction
     return activation - proj
 
 
