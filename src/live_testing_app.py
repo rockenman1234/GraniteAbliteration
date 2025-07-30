@@ -5,11 +5,18 @@
 Live Testing Environment for Granite 3.3 Abliteration
 
 This interactive application allows you to:
-- Load models with flexible RAM/VRAM configuration
+- Load models with flexible RAM/VRAM configuration across multiple backends
 - Adjust abliteration parameters in real-time
 - Test model responses with system templates
 - Monitor coherence and safety bypass effectiveness
 - Compare original vs abliterated responses
+
+Supported PyTorch Backends:
+- CUDA (NVIDIA GPUs)
+- MPS (Apple Metal Performance Shaders)
+- ROCm (AMD GPUs)
+- XPU (Intel GPUs)
+- CPU (fallback)
 
 Usage:
     pip install gradio
@@ -47,6 +54,210 @@ except ImportError as e:
     print("Ensure all modules are in the src directory")
     exit(1)
 
+def clear_gpu_memory():
+    """
+    Clear GPU memory for all available PyTorch backends.
+    
+    This function dynamically detects available backends and clears
+    memory accordingly for CUDA, MPS, ROCm, and XPU.
+    """
+    backends = detect_available_backends()
+    
+    # CUDA (NVIDIA)
+    if backends.get('cuda', {}).get('available', False):
+        torch.cuda.empty_cache()
+        torch.cuda.synchronize()
+    
+    # MPS (Apple Metal)
+    if backends.get('mps', {}).get('available', False):
+        if hasattr(torch.backends.mps, 'empty_cache'):
+            torch.backends.mps.empty_cache()
+    
+    # ROCm (AMD) - uses CUDA API
+    if backends.get('rocm', {}).get('available', False):
+        torch.cuda.empty_cache()  # ROCm uses torch.cuda namespace
+        torch.cuda.synchronize()
+    
+    # XPU (Intel)
+    if backends.get('xpu', {}).get('available', False):
+        if hasattr(torch, 'xpu') and hasattr(torch.xpu, 'empty_cache'):
+            torch.xpu.empty_cache()
+
+def detect_available_backends() -> Dict[str, Dict[str, Any]]:
+    """
+    Dynamically detect all available PyTorch backends and their capabilities.
+    
+    Returns:
+        Dict containing backend information:
+        {
+            'cuda': {'available': bool, 'devices': int, 'memory_gb': float, 'device_names': list},
+            'mps': {'available': bool, 'devices': int, 'memory_gb': float},
+            'rocm': {'available': bool, 'devices': int, 'memory_gb': float, 'device_names': list},
+            'xpu': {'available': bool, 'devices': int},
+            'cpu': {'available': bool, 'cores': int, 'memory_gb': float}
+        }
+    """
+    backends = {}
+    
+    # CUDA Backend (NVIDIA)
+    try:
+        backends['cuda'] = {
+            'available': torch.cuda.is_available(),
+            'devices': torch.cuda.device_count() if torch.cuda.is_available() else 0,
+            'memory_gb': 0.0,
+            'device_names': []
+        }
+        
+        if torch.cuda.is_available():
+            for i in range(torch.cuda.device_count()):
+                device_props = torch.cuda.get_device_properties(i)
+                backends['cuda']['device_names'].append(device_props.name)
+                # Add memory for each device
+                backends['cuda']['memory_gb'] += device_props.total_memory / (1024**3)
+                
+    except Exception as e:
+        backends['cuda'] = {'available': False, 'error': str(e)}
+    
+    # MPS Backend (Apple Metal Performance Shaders)
+    try:
+        mps_available = hasattr(torch.backends, 'mps') and torch.backends.mps.is_available()
+        backends['mps'] = {
+            'available': mps_available,
+            'devices': 1 if mps_available else 0,
+            'memory_gb': 0.0  # MPS shares system memory, harder to detect dedicated VRAM
+        }
+        
+        if mps_available:
+            # Try to get approximate GPU memory via system info
+            try:
+                import subprocess
+                result = subprocess.run(['system_profiler', 'SPDisplaysDataType'], 
+                                      capture_output=True, text=True, timeout=5)
+                if result.returncode == 0:
+                    # Parse for VRAM info (basic approximation)
+                    output = result.stdout.lower()
+                    if 'vram' in output or 'memory' in output:
+                        # This is a rough estimate - MPS memory detection is complex
+                        backends['mps']['memory_gb'] = 8.0  # Default reasonable estimate
+            except:
+                pass
+                
+    except Exception as e:
+        backends['mps'] = {'available': False, 'error': str(e)}
+    
+    # ROCm Backend (AMD)
+    try:
+        # ROCm uses torch.cuda namespace but with AMD devices
+        rocm_available = False
+        if hasattr(torch.version, 'hip') and torch.version.hip is not None:
+            rocm_available = torch.cuda.is_available()  # ROCm reuses CUDA API
+            
+        backends['rocm'] = {
+            'available': rocm_available,
+            'devices': torch.cuda.device_count() if rocm_available else 0,
+            'memory_gb': 0.0,
+            'device_names': []
+        }
+        
+        if rocm_available:
+            # For ROCm, device detection is similar to CUDA
+            for i in range(torch.cuda.device_count()):
+                try:
+                    device_props = torch.cuda.get_device_properties(i)
+                    backends['rocm']['device_names'].append(device_props.name)
+                    backends['rocm']['memory_gb'] += device_props.total_memory / (1024**3)
+                except:
+                    pass
+                    
+    except Exception as e:
+        backends['rocm'] = {'available': False, 'error': str(e)}
+    
+    # Intel XPU Backend (Intel GPUs)
+    try:
+        xpu_available = hasattr(torch, 'xpu') and torch.xpu.is_available()
+        backends['xpu'] = {
+            'available': xpu_available,
+            'devices': torch.xpu.device_count() if xpu_available else 0
+        }
+    except Exception as e:
+        backends['xpu'] = {'available': False, 'error': str(e)}
+    
+    # CPU Backend (always available)
+    try:
+        import psutil
+        cpu_info = {
+            'available': True,
+            'cores': psutil.cpu_count(logical=True),
+            'memory_gb': psutil.virtual_memory().total / (1024**3)
+        }
+    except ImportError:
+        cpu_info = {
+            'available': True,
+            'cores': os.cpu_count() or 1,
+            'memory_gb': 0.0  # Unknown without psutil
+        }
+    
+    backends['cpu'] = cpu_info
+    
+    return backends
+
+def get_optimal_device_config() -> str:
+    """
+    Automatically determine the best device configuration based on available backends.
+    
+    Returns:
+        Recommended device configuration string
+    """
+    backends = detect_available_backends()
+    
+    # Priority order: CUDA > MPS > ROCm > XPU > CPU
+    if backends.get('cuda', {}).get('available', False):
+        return 'cuda'
+    elif backends.get('mps', {}).get('available', False):
+        return 'mps'
+    elif backends.get('rocm', {}).get('available', False):
+        return 'rocm'
+    elif backends.get('xpu', {}).get('available', False):
+        return 'xpu'
+    else:
+        return 'cpu'
+
+def format_backend_info() -> str:
+    """
+    Format detected backend information for display.
+    
+    Returns:
+        Formatted string with backend details
+    """
+    backends = detect_available_backends()
+    lines = []
+    
+    for backend_name, info in backends.items():
+        if info.get('available', False):
+            line = f"✅ {backend_name.upper()}"
+            
+            if backend_name == 'cpu':
+                line += f" ({info.get('cores', 'Unknown')} cores, {info.get('memory_gb', 0):.1f}GB RAM)"
+            else:
+                devices = info.get('devices', 0)
+                memory = info.get('memory_gb', 0)
+                line += f" ({devices} device{'s' if devices != 1 else ''}"
+                if memory > 0:
+                    line += f", {memory:.1f}GB VRAM"
+                line += ")"
+                
+                # Add device names if available
+                device_names = info.get('device_names', [])
+                if device_names:
+                    line += f" - {', '.join(device_names)}"
+                    
+            lines.append(line)
+        else:
+            error = info.get('error', 'Not available')
+            lines.append(f"❌ {backend_name.upper()} - {error}")
+    
+    return '\n'.join(lines)
+
 class LiveAbliterationTester:
     def __init__(self):
         self.original_model = None
@@ -68,19 +279,41 @@ class LiveAbliterationTester:
             self.model_name = os.path.basename(model_path)
             self.device_config = device_config
             
-            # Configure device mapping
+            # Configure device mapping using dynamic backend detection
             device_map = None
             torch_dtype = torch.bfloat16
+            backends = detect_available_backends()
             
             if device_config == "cpu":
                 device_map = "cpu"
                 torch_dtype = torch.float32  # CPU works better with float32
             elif device_config == "gpu":
-                if not torch.cuda.is_available():
-                    return "❌ CUDA not available for GPU loading"
-                device_map = "auto"
+                # Use the best available GPU backend
+                if backends.get('cuda', {}).get('available', False):
+                    device_map = "auto"
+                elif backends.get('mps', {}).get('available', False):
+                    device_map = "mps"
+                elif backends.get('rocm', {}).get('available', False):
+                    device_map = "auto"  # ROCm uses auto mapping
+                elif backends.get('xpu', {}).get('available', False):
+                    device_map = "xpu"
+                else:
+                    return "❌ No GPU backend available for GPU loading"
             elif device_config == "balanced":
                 device_map = "balanced"
+            elif device_config in ["cuda", "mps", "rocm", "xpu"]:
+                # Direct backend specification
+                if backends.get(device_config, {}).get('available', False):
+                    if device_config == "cuda":
+                        device_map = "auto"
+                    elif device_config == "mps":
+                        device_map = "mps"
+                    elif device_config == "rocm":
+                        device_map = "auto"
+                    elif device_config == "xpu":
+                        device_map = "xpu"
+                else:
+                    return f"❌ {device_config.upper()} backend not available"
             
             # Load model
             load_args = {
@@ -99,7 +332,7 @@ class LiveAbliterationTester:
                     bnb_4bit_compute_dtype=torch.bfloat16
                 )
             
-            print(f"🔄 Loading {self.model_name} with {device_config} configuration...")
+            print(f"Loading {self.model_name} with {device_config} configuration...")
             
             self.original_model = AutoModelForCausalLM.from_pretrained(model_path, **load_args)
             self.tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -113,17 +346,24 @@ class LiveAbliterationTester:
             # Validate Granite model
             if is_granite_model(self.current_model, model_path):
                 self.current_model = fix_granite_config(self.current_model)
-                model_type = "🟪 IBM Granite Model"
+                model_type = "IBM Granite Model"
             else:
-                model_type = "🔵 Other Model"
+                model_type = "Other Model"
                 
             # Get model info
             total_params = sum(p.numel() for p in self.current_model.parameters())
             trainable_params = sum(p.numel() for p in self.current_model.parameters() if p.requires_grad)
             
             memory_info = ""
-            if torch.cuda.is_available() and device_config != "cpu":
-                memory_info = f"GPU Memory: {torch.cuda.memory_allocated()/1e9:.1f}GB allocated"
+            if device_config != "cpu":
+                if backends.get('cuda', {}).get('available', False):
+                    memory_info = f"CUDA Memory: {torch.cuda.memory_allocated()/1e9:.1f}GB allocated"
+                elif backends.get('mps', {}).get('available', False):
+                    memory_info = f"MPS Memory: Shared with system RAM"
+                elif backends.get('rocm', {}).get('available', False):
+                    memory_info = f"ROCm Memory: {torch.cuda.memory_allocated()/1e9:.1f}GB allocated"
+                elif backends.get('xpu', {}).get('available', False):
+                    memory_info = f"XPU Memory: Intel GPU backend active"
             
             return f"""✅ Model Loaded Successfully!
             
@@ -135,7 +375,7 @@ class LiveAbliterationTester:
 - **Precision:** {torch_dtype}
 {memory_info}
 
-🎯 **Ready for abliteration testing!**"""
+Ready for abliteration testing!"""
             
         except Exception as e:
             return f"❌ Error loading model: {str(e)}"
@@ -161,8 +401,7 @@ class LiveAbliterationTester:
                 # Reset to original model
                 del self.current_model
                 gc.collect()
-                if torch.cuda.is_available():
-                    torch.cuda.empty_cache()
+                clear_gpu_memory()
                 
                 # Create fresh copy for abliteration
                 self.current_model = AutoModelForCausalLM.from_pretrained(
@@ -209,8 +448,7 @@ class LiveAbliterationTester:
                     # Step 1: Reset to original model
                     del self.current_model
                     gc.collect()
-                    if torch.cuda.is_available():
-                        torch.cuda.empty_cache()
+                    clear_gpu_memory()
                     
                     # Create fresh copy for abliteration
                     self.current_model = AutoModelForCausalLM.from_pretrained(
@@ -220,7 +458,7 @@ class LiveAbliterationTester:
                     )
                     
                     # Step 2: Apply weight-based abliteration first
-                    print("🔧 Applying weight-based abliteration...")
+                    print("Applying weight-based abliteration...")
                     self.current_model = abliterate_model(
                         self.current_model,
                         abliteration_strength=strength,
@@ -230,18 +468,18 @@ class LiveAbliterationTester:
                     )
                     
                     # Step 3: Load prompts for direction computation
-                    print("📊 Loading prompts for direction computation...")
+                    print("Loading prompts for direction computation...")
                     harmful_prompts, harmless_prompts = load_prompts_from_files()
                     
                     # Step 4: Compute refusal direction using the weight-abliterated model
-                    print("🎯 Computing refusal direction...")
+                    print("Computing refusal direction...")
                     refusal_direction = compute_refusal_direction(
                         self.current_model, self.tokenizer,
                         harmful_prompts[:16], harmless_prompts[:16]  # Use subset for speed
                     )
                     
                     # Step 5: Apply direction ablation on top of weight abliteration
-                    print("⚙️ Applying direction ablation...")
+                    print("Applying direction ablation...")
                     self.current_model = apply_direction_ablation(
                         self.current_model, refusal_direction, layer_list
                     )
@@ -262,13 +500,13 @@ class LiveAbliterationTester:
             
             return f"""✅ Abliteration Applied!
 
-🔧 **Parameters Used:**
+**Parameters Used:**
 - **Method:** {method_info}
 - **Target Layers:** {target_layers if target_layers else 'Auto-detected'}
 - **Layer-specific strength:** {'Yes' if layer_specific else 'No'}
 - **Preserve critical paths:** {'Yes' if preserve_critical else 'No'}
 
-🧪 **Ready for testing!** Use the chat interface below to test the abliterated model."""
+Ready for testing! Use the chat interface below to test the abliterated model."""
             
         except Exception as e:
             return f"❌ Abliteration failed: {str(e)}"
@@ -281,8 +519,7 @@ class LiveAbliterationTester:
             
             del self.current_model
             gc.collect()
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
+            clear_gpu_memory()
             
             self.current_model = self.original_model
             return "✅ Model reset to original state"
@@ -334,21 +571,20 @@ class LiveAbliterationTester:
             tokens_generated = len(outputs[0]) - len(inputs['input_ids'][0])
             speed = tokens_generated / generation_time if generation_time > 0 else 0
             
-            return f"{response}\n\n---\n⚡ Generated {tokens_generated} tokens in {generation_time:.2f}s ({speed:.1f} tok/s)"
+            return f"{response}\n\n---\nGenerated {tokens_generated} tokens in {generation_time:.2f}s ({speed:.1f} tok/s)"
             
         except Exception as e:
             return f"❌ Generation failed: {str(e)}"
     
     def cleanup_models(self):
-        """Clean up GPU memory"""
+        """Clean up GPU memory for all available backends"""
         if hasattr(self, 'current_model') and self.current_model is not None:
             del self.current_model
         if hasattr(self, 'original_model') and self.original_model is not None:
             del self.original_model
         
         gc.collect()
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+        clear_gpu_memory()
 
 # Initialize the tester
 tester = LiveAbliterationTester()
@@ -357,13 +593,13 @@ tester = LiveAbliterationTester()
 def create_interface():
     """Create the Gradio interface"""
     
-    with gr.Blocks(title="🧪 Granite 3.3 Live Abliteration Tester", theme=gr.themes.Soft()) as interface:
+    with gr.Blocks(title="Granite Live Abliteration Tester", theme=gr.themes.Soft()) as interface:
         
         gr.Markdown("""
-        # 🧪 Granite 3.3 Live Abliteration Testing Environment
-        
-        **Interactive testing for abliteration effectiveness on IBM Granite models**
-        
+        # Granite Live Abliteration Testing Environment
+
+        **Interactive testing toolkit for abliteration effectiveness with IBM Granite LLMs**
+
         📍 **Workflow:** Load Model → Apply Abliteration → Test Responses → Adjust Parameters → Repeat
         """)
         
@@ -531,13 +767,15 @@ def create_interface():
 
 def main():
     """Main entry point for the live testing application"""
-    print("🧪 Starting Granite 3.3 Live Abliteration Tester...")
+    print("Starting Granite 3.3 Live Abliteration Tester...")
     print("📊 System Info:")
     print(f"   - PyTorch: {torch.__version__}")
-    print(f"   - CUDA Available: {torch.cuda.is_available()}")
-    if torch.cuda.is_available():
-        print(f"   - GPU: {torch.cuda.get_device_name()}")
-        print(f"   - VRAM: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB")
+    print("📊 Available Backends:")
+    print(format_backend_info())
+    
+    # Show optimal configuration
+    optimal = get_optimal_device_config()
+    print(f"Optimal Backend: {optimal.upper()}")
     
     # Create and launch interface
     interface = create_interface()
