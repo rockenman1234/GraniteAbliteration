@@ -216,7 +216,8 @@ GraniteAbliteration/
 │   ├── test_coherence.py            # Automated coherence testing (HuggingFace)
 │   ├── test_abliteration_ollama.py  # Comprehensive Ollama testing
 │   ├── validate_environment.py      # Environment validation
-│   └── quantize_granite.ps1         # GGUF quantization script
+│   ├── quantize_granite.ps1         # GGUF quantization script (PowerShell)
+│   └── quantize_granite.sh          # GGUF quantization script (Bash/macOS/Linux)
 ├── misc/                            # Configuration and data files
 │   ├── harmful.txt                  # Harmful prompts for direction computation
 │   └── harmless.txt                 # Harmless prompts for baseline
@@ -253,6 +254,55 @@ python tools/test_abliteration_ollama.py granite-original:latest granite-abliter
 ### What to Look For
 **✅ Success Indicators**: Coherent sentences generated consistently, logical progression of sentences, proper vocabulary use, creative capabilities intact, no repetition loops  
 **❌ Failure Signs**: Garbled text, repetitive loops, grammar collapse, random tokens, silent failures and returns
+
+---
+
+## 🔄 Model Quantization
+
+### GGUF Conversion and Quantization Scripts
+
+The toolkit includes cross-platform scripts for converting and quantizing Granite models to GGUF format for deployment with llama.cpp and Ollama.
+
+#### PowerShell Script (Windows/Cross-platform)
+```powershell
+# Interactive mode - prompts for input/output directories
+./tools/quantize_granite.ps1
+
+# Specify directories directly
+./tools/quantize_granite.ps1 -InputDir "granite_abliterated" -OutputDir "granite_abliterated_gguf"
+
+# Custom llama.cpp location
+./tools/quantize_granite.ps1 -InputDir "granite_abliterated" -OutputDir "granite_abliterated_gguf" -LlamaCppDir "~/llama.cpp"
+```
+
+#### Shell Script (macOS/Linux)
+```bash
+# Interactive mode - prompts for input/output directories
+./tools/quantize_granite.sh
+
+# Specify directories directly
+./tools/quantize_granite.sh granite_abliterated granite_abliterated_gguf
+
+# Custom llama.cpp location
+LLAMA_CPP_DIR=~/llama.cpp ./tools/quantize_granite.sh granite_abliterated granite_abliterated_gguf
+```
+
+#### Features
+- **Interactive Mode**: Automatically detects available models and prompts for directories
+- **Multiple Quantization Levels**: Creates 8 different quantization formats (Q8_0, Q6_K, Q5_K_M, Q5_0, Q4_K_M, Q4_0, Q3_K, Q2_K)
+- **Cross-platform**: PowerShell script works on Windows, macOS, and Linux
+- **Progress Tracking**: Real-time progress updates and file size reporting
+- **Git Integration**: Automatically sets up Git LFS for large GGUF files
+- **Asset Preservation**: Copies README.md, assets, and images from source model
+
+#### Output
+Each script produces:
+- **FP16 GGUF**: High-quality baseline conversion
+- **8 Quantized Variants**: From Q8_0 (highest quality) to Q2_K (smallest size)
+- **File Size Reports**: Shows size reduction for each quantization level
+- **Git LFS Configuration**: Ready for version control and Hugging Face upload
+
+Total output size: ~50-80GB depending on quantization levels
 
 ---
 

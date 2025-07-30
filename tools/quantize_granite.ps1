@@ -1,15 +1,74 @@
 #!/usr/bin/env pwsh
 
-# Script to convert granite_test_04_enhanced to GGUF and quantize
-# Based on: https://gpustack.ai/convert-and-upload-your-gguf-model-to-huggingface-step-by-step-guide/
+# Script to convert granite models to GGUF and quantize
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightYear: 2025
 
-$llama_cpp = "C:\Users\kajen\Desktop\GraniteAbliteration\llama.cpp"
-$base_dir = "C:\Users\kajen\Desktop\GraniteAbliteration"
-$source_model = "granite_test_04_enhanced"
-$dest_model = "granite-3.3-8b-instruct-abliterated-GGUF"
+param(
+    [Parameter(HelpMessage="Path to input model directory")]
+    [string]$InputDir,
+    
+    [Parameter(HelpMessage="Path to output directory")]
+    [string]$OutputDir,
+    
+    [Parameter(HelpMessage="Path to llama.cpp directory (default: ./llama.cpp)")]
+    [string]$LlamaCppDir = "./llama.cpp"
+)
+
+# Get script directory (codebase root)
+$script_dir = Split-Path -Parent $PSScriptRoot
+$codebase_root = $script_dir
+
+# Prompt for input directory if not provided
+if (-not $InputDir) {
+    Write-Host "Available models in codebase:"
+    Get-ChildItem -Path $codebase_root -Directory | Where-Object { $_.Name -like "*granite*" -or $_.Name -like "*model*" } | ForEach-Object {
+        Write-Host "  - $($_.Name)"
+    }
+    Write-Host ""
+    $InputDir = Read-Host "Enter input model directory name (relative to codebase root)"
+}
+
+# Prompt for output directory if not provided
+if (-not $OutputDir) {
+    $default_output = "$($InputDir)-GGUF"
+    $OutputDir = Read-Host "Enter output directory name (default: $default_output)"
+    if (-not $OutputDir) {
+        $OutputDir = $default_output
+    }
+}
+
+# Convert to absolute paths relative to codebase root
+$source_path = Join-Path $codebase_root $InputDir
+$dest_path = Join-Path $codebase_root $OutputDir
+
+# Resolve llama.cpp path relative to codebase
+if (-not [System.IO.Path]::IsPathRooted($LlamaCppDir)) {
+    $llama_cpp = Join-Path $codebase_root $LlamaCppDir
+} else {
+    $llama_cpp = $LlamaCppDir
+}
+
+# Validate paths
+if (-not (Test-Path $source_path)) {
+    Write-Error "Input directory not found: $source_path"
+    exit 1
+}
+
+if (-not (Test-Path $llama_cpp)) {
+    Write-Error "llama.cpp directory not found: $llama_cpp"
+    Write-Host "Please ensure llama.cpp is cloned in the codebase root or specify the correct path."
+    exit 1
+}
+
+Write-Host "Configuration:"
+Write-Host "  Codebase root: $codebase_root"
+Write-Host "  Input model: $source_path"
+Write-Host "  Output directory: $dest_path"
+Write-Host "  llama.cpp: $llama_cpp"
+Write-Host ""
 
 # Create destination directory
-$dest_path = Join-Path $base_dir $dest_model
 if (!(Test-Path $dest_path)) {
     New-Item -ItemType Directory -Path $dest_path -Force
 }
@@ -21,7 +80,6 @@ if (!(Test-Path ".git")) {
 }
 
 # Copy assets if they exist
-$source_path = Join-Path $base_dir $source_model
 if (Test-Path (Join-Path $source_path "assets")) {
     Copy-Item -Path (Join-Path $source_path "assets") -Destination $dest_path -Recurse -Force
 }
@@ -44,7 +102,8 @@ Set-Location $llama_cpp
 Write-Host "#### Converting HF model from BF16 to FP16 GGUF"
 Write-Host "Source model dtype: bfloat16 -> Target: FP16 GGUF"
 
-$fp16_conversion = python convert_hf_to_gguf.py $source_path --outfile "$dest_path\granite-3.3-8b-instruct-abliterated-FP16.gguf" --outtype f16
+$model_name = Split-Path $InputDir -Leaf
+$fp16_conversion = python convert_hf_to_gguf.py $source_path --outfile "$dest_path\$model_name-FP16.gguf" --outtype f16
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Failed to convert to FP16 GGUF"
     exit 1
@@ -66,10 +125,10 @@ $quantizations = @(
 
 # Quantize the model to all formats
 $quantize_exe = Join-Path $llama_cpp "build\bin\Release\llama-quantize.exe"
-$input_file = "$dest_path\granite-test-04-enhanced-FP16.gguf"
+$input_file = "$dest_path\$model_name-FP16.gguf"
 
 Write-Host "`n#### Starting quantization process..."
-Write-Host "Source: granite-test-04-enhanced-FP16.gguf (from BF16 original)"
+Write-Host "Source: $model_name-FP16.gguf (from BF16 original)"
 Write-Host "Target formats: 8 quantization levels"
 
 $completed = 0
@@ -79,7 +138,7 @@ foreach ($q in $quantizations) {
     $completed++
     Write-Host "`n[$completed/$total] Converting to $($q.Type) - $($q.Description)"
     
-    $output_file = "$dest_path\granite-test-04-enhanced-$($q.Type).gguf"
+    $output_file = "$dest_path\$model_name-$($q.Type).gguf"
     
     # Run quantization
     $result = & $quantize_exe $input_file $output_file $q.Type
