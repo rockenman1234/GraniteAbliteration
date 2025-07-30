@@ -1,4 +1,4 @@
-# Granite 3 LLM Abliteration
+# Granite 3 LLM Abliteration Toolkit
 
 <div align="center">
 
@@ -25,7 +25,7 @@
 
 ## Overview
 
-Advanced abliteration implementation for IBM Granite 3.3:8B models. Unlike traditional methods that zero weights (causing garbled text), this combines **selective weight modification** with **layer-specific targeting** and **direction-based ablation** to remove safety filters while maintaining coherent text generation.
+Advanced abliteration implementation for IBM Granite 3.3:8B models. Unlike traditional methods that zero weights (causing garbled text), this combines **selective weight modification** with **layer-specific targeting** and **direction-based ablation** to remove safety filters while maintaining coherent text generation. We also provide a gradio locahost-webui for easy, on-the-fly tuning of your model.
 
 ---
 
@@ -34,10 +34,12 @@ Advanced abliteration implementation for IBM Granite 3.3:8B models. Unlike tradi
 - [✅ Successfully Tested](#-successfully-tested)
 - [🎯 Critical Components](#-critical-components)
 - [🚀 Quick Start](#-quick-start)
-- [🗂️ Technical Implementation](#-technical-implementation)
+- [🔬 Technical Implementation](#-technical-implementation)
 - [🧪 Testing & Validation](#-testing--validation)
 - [⚠️ Important Notes](#️-important-notes)
 - [🤖 Test Results](#-test-results)
+- [📸 Screenshots](#-screenshots)
+- [🐝 Miscellaneous](#-miscellaneous)
 
 ---
 
@@ -618,7 +620,32 @@ Abliterated Model Coherence: 4/4 (100.0%)
 Check the output above to verify abliteration effectiveness.
 ```
 
+# 📸 Screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d291a9b1-31ed-4052-85f1-7c5863980d6e" width="auto" alt="init" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2745a2c2-a18c-458e-ae3b-b3541fef8969" width="auto" alt="1" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/bc765f29-b114-4571-aac0-2efb3cbc512a" width="auto" alt="2" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e6677807-d323-463a-a3d4-8a2086c49606" width="auto" alt="3" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/cc76102e-74c5-4c3b-884d-7afeea0e887d" width="auto" alt="4" />
+</p>
+
+
 ---
+
+# 🐝 Miscellaneous
 
 ## 🤝 Contributing
 
