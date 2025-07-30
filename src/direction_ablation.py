@@ -230,8 +230,8 @@ def apply_direction_ablation(model: nn.Module, refusal_direction: torch.Tensor,
     return model
 
 
-def load_prompts_from_files(harmful_file: str = "harmful.txt", 
-                           harmless_file: str = "harmless.txt",
+def load_prompts_from_files(harmful_file: str = "../misc/harmful.txt", 
+                           harmless_file: str = "../misc/harmless.txt",
                            num_prompts: int = 32) -> Tuple[List[str], List[str]]:
     """
     Load harmful and harmless prompts from text files.
@@ -430,32 +430,11 @@ def compute_and_apply_direction_ablation(model_name_or_path: str,
     
     return model
 
+def main():
+    """Main entry point for the direction ablation script - now handled by main.py"""
+    print("⚠️  This script is now called through main.py")
+    print("Use: python main.py direction <input_dir> <output_dir>")
+    print("For help: python main.py --help")
 
 if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) < 2:
-        print("Direction-Based Ablation for IBM Granite Models")
-        print("=" * 50)
-        print("Usage:")
-        print("  python direction_ablation.py <model_path> [output_dir] [num_prompts]")
-        print()
-        print("Examples:")
-        print("  python direction_ablation.py granite_original granite_direction_ablated")
-        print("  python direction_ablation.py granite_original granite_direction_ablated 64")
-        print()
-        print("This approach computes a 'refusal direction' and ablates it from")
-        print("model activations, providing more precise control than weight modification.")
-        sys.exit(1)
-    
-    model_path = sys.argv[1]
-    output_dir = sys.argv[2] if len(sys.argv) > 2 else None
-    num_prompts = int(sys.argv[3]) if len(sys.argv) > 3 else 32
-    
-    # Run direction-based ablation
-    compute_and_apply_direction_ablation(
-        model_name_or_path=model_path,
-        save_model_path=output_dir,
-        num_prompts=num_prompts,
-        force_recompute=True  # Always recompute for fresh analysis
-    )
+    main()

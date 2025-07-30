@@ -20,6 +20,9 @@ accelerate
 einops
 jaxtyping
 
+# Live testing environment
+gradio>=4.0.0
+
 # For GGUF conversion (install separately in llama.cpp directory)
 # cd llama.cpp && pip install -r requirements.txt
 
