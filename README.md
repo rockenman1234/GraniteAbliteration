@@ -25,7 +25,7 @@
 
 ## Overview
 
-Advanced abliteration implementation for IBM Granite 3.3:8B models. Unlike traditional methods that zero weights (causing garbled text), this combines **selective weight modification** with **layer-specific targeting** and **direction-based ablation** to remove safety filters while maintaining coherent text generation. We also provide a gradio locahost-webui for easy, on-the-fly tuning of your model.
+Advanced abliteration implementation for IBM Granite 3.3:8B models. Unlike traditional methods that zero weights (causing garbled text), this combines **selective weight modification** with **layer-specific targeting** and **direction-based ablation** to remove safety filters while maintaining coherent text generation. We also provide a gradio localhost-webui for easy, on-the-fly tuning of your model.
 
 ---
 
