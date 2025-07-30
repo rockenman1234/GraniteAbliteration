@@ -702,7 +702,7 @@ Please see our [Code of Conduct](CODE_OF_CONDUCT.md) before submitting any pull 
 
 Copyright 2025 Kenneth A. Jenkins, & contributors.
 
-[Licensed under the Apache License, Version 2.0](LICENSE) (the "License");
+[Licensed under the Apache License, Version 2.0](LICENSE.txt) (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 

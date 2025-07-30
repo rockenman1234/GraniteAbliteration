@@ -235,8 +235,8 @@ Examples:
             if not check_dependencies():
                 return
             sys.path.insert(0, str(Path(__file__).parent / "tools"))
-            from test_coherence import main as test_main
-            test_main()
+            from tools.test_coherence import test_model_coherence_and_abliteration
+            test_model_coherence_and_abliteration(args.model_dir)
             
     except ImportError as e:
         print(f"❌ Import error: {e}")
