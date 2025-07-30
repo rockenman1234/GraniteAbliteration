@@ -32,7 +32,6 @@ except ImportError:
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import os
-import json
 import time
 import gc
 from typing import Dict, Optional, Tuple, Any
@@ -265,7 +264,6 @@ class LiveAbliterationTester:
         self.tokenizer = None
         self.model_name = ""
         self.device_config = "cpu"
-        self.last_params = {}
         
     def load_model(self, model_path: str, device_config: str, use_4bit: bool = False) -> str:
         """Load model with specified device configuration"""
@@ -488,15 +486,6 @@ Ready for abliteration testing!"""
                     
                 except Exception as e:
                     return f"❌ Hybrid abliteration failed: {str(e)}\nEnsure harmful.txt and harmless.txt exist."
-            
-            # Store parameters for reference
-            self.last_params = {
-                'strength': strength,
-                'target_layers': target_layers,
-                'layer_specific': layer_specific,
-                'preserve_critical': preserve_critical,
-                'method': method
-            }
             
             return f"""✅ Abliteration Applied!
 

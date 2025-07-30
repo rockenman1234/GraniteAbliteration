@@ -4,7 +4,6 @@
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from typing import Union
 
 
 def is_granite_model(model: torch.nn.Module, model_name: str = "") -> bool:
@@ -31,7 +30,6 @@ def is_granite_model(model: torch.nn.Module, model_name: str = "") -> bool:
         return True
         
     # Check for IBM-specific config attributes that suggest Granite
-    granite_indicators = ['num_key_value_heads', 'scale_attention_softmax_in_fp32']
     if hasattr(model.config, 'num_key_value_heads') and hasattr(model.config, 'scale_attention_softmax_in_fp32'):
         return True
         
@@ -287,100 +285,6 @@ def fix_granite_config(model: torch.nn.Module) -> torch.nn.Module:
     return model
 
 
-def apply_enhanced_refusal_reduction(model: torch.nn.Module) -> torch.nn.Module:
-    """
-    Apply enhanced refusal reduction techniques inspired by remove-refusals-with-transformers.
-    
-    This function implements the most effective approaches to reduce refusal rates:
-    1. Safety neuron identification and suppression (aggressive mode)
-    2. Attention pattern disruption for safety mechanisms  
-    3. MLP output bias adjustment to reduce refusal probability
-    4. Layer-specific safety pattern breaking
-    5. Enhanced safety mechanism disruption
-    
-    Args:
-        model: The model to enhance
-        
-    Returns:
-        Model with enhanced refusal reduction applied
-    """
-    print("\n[*] Applying enhanced refusal reduction techniques...")
-    
-    modifications_applied = []
-    
-    # Identify and modify safety-related patterns in MLP layers
-    for name, param in model.named_parameters():
-        if 'mlp' in name.lower() and 'weight' in name:
-            layer_num = None
-            if 'layers.' in name:
-                try:
-                    layer_part = name.split('layers.')[1].split('.')[0]
-                    layer_num = int(layer_part)
-                except (IndexError, ValueError):
-                    continue
-            
-            # Apply safety pattern disruption
-            with torch.no_grad():
-                # Identify potential safety neurons (high magnitude weights)
-                weight_magnitudes = torch.abs(param.data).float()  # Convert to float for quantile
-                # Use a more memory-efficient approach for large tensors
-                if weight_magnitudes.numel() > 1000000:  # For very large tensors
-                    # Sample a subset for quantile calculation
-                    sample_size = min(100000, weight_magnitudes.numel())
-                    sample_indices = torch.randperm(weight_magnitudes.numel())[:sample_size]
-                    sample_weights = weight_magnitudes.view(-1)[sample_indices]
-                    safety_threshold = torch.quantile(sample_weights, 0.95)
-                else:
-                    safety_threshold = torch.quantile(weight_magnitudes, 0.95)  # Top 5% of weights
-                safety_mask = weight_magnitudes > safety_threshold
-                
-                # Apply enhanced (aggressive) safety reduction
-                reduction_factor = 0.3  # Use the more aggressive setting
-                param.data[safety_mask] *= (1.0 - reduction_factor)
-                
-                # Add targeted noise to break safety patterns
-                safety_noise = torch.randn_like(param.data[safety_mask]) * 0.005 * param.data[safety_mask].std()
-                param.data[safety_mask] += safety_noise
-                
-                modifications_applied.append(f"Enhanced safety reduction on {name}")
-    
-    # Apply bias adjustments to reduce refusal probability
-    for name, param in model.named_parameters():
-        if 'bias' in name and ('mlp' in name.lower() or 'fc' in name.lower()):
-            with torch.no_grad():
-                # Enhanced negative bias to reduce activation of safety mechanisms
-                safety_bias_adjustment = -0.002  # Use the more aggressive setting
-                param.data += safety_bias_adjustment
-                modifications_applied.append(f"Enhanced bias adjustment on {name}")
-    
-    # Layer-specific enhancements for middle layers (where safety is typically encoded)
-    if hasattr(model, 'model') and hasattr(model.model, 'layers'):
-        total_layers = len(model.model.layers)
-        middle_layers = range(int(total_layers * 0.3), int(total_layers * 0.7))
-        
-        for layer_idx in middle_layers:
-            layer_name = f"model.layers.{layer_idx}"
-            
-            # Apply additional modifications to middle layers
-            for name, param in model.named_parameters():
-                if layer_name in name and 'down_proj' in name:  # Focus on output projections
-                    with torch.no_grad():
-                        # Apply enhanced output suppression to reduce safety activations
-                        suppression_factor = 0.90  # Use the more aggressive setting
-                        param.data *= suppression_factor
-                        modifications_applied.append(f"Enhanced output suppression on {name}")
-    
-    print(f"  Applied {len(modifications_applied)} enhanced modifications:")
-    for mod in modifications_applied[:5]:
-        print(f"    ✓ {mod}")
-    if len(modifications_applied) > 5:
-        print(f"    ... and {len(modifications_applied) - 5} more")
-    
-    print(f"  ✓ Enhanced refusal reduction complete (maximum effectiveness mode)")
-    
-    return model
-
-
 def save_abliterated_model(model: torch.nn.Module, tokenizer: AutoTokenizer, save_dir: str):
     """
     Saves the abliterated model and tokenizer to the specified directory.
@@ -453,7 +357,7 @@ def save_abliterated_model(model: torch.nn.Module, tokenizer: AutoTokenizer, sav
         # Ensure no safety-related special tokens are enforced
         safety_tokens_removed = []
         if hasattr(tokenizer, 'added_tokens_decoder'):
-            for token_id, token_info in list(tokenizer.added_tokens_decoder.items()):
+            for _token_id, token_info in list(tokenizer.added_tokens_decoder.items()):
                 # Handle both dict and AddedToken objects
                 if hasattr(token_info, 'content'):
                     content = token_info.content
@@ -508,71 +412,6 @@ def save_abliterated_model(model: torch.nn.Module, tokenizer: AutoTokenizer, sav
     else:
         print("✓ Model and tokenizer saved successfully")
 
-
-
-def optimize_for_maximum_effectiveness(model: torch.nn.Module, model_name: str = "") -> torch.nn.Module:
-    """
-    Apply final optimizations to maximize abliteration effectiveness while preserving coherence.
-    
-    This implements the most effective techniques from remove-refusals-with-transformers
-    while maintaining the careful preservation approach needed for Granite models.
-    """
-    print("\n[*] Applying final optimization for maximum effectiveness...")
-    
-    is_granite = is_granite_model(model, model_name)
-    
-    if is_granite:
-        print("  Detected Granite model - applying Granite-specific optimizations")
-        
-        # Granite-specific optimizations
-        optimizations = []
-        
-        # 1. Fine-tune attention mechanisms to reduce safety filtering
-        for name, param in model.named_parameters():
-            if 'self_attn' in name and 'o_proj' in name:  # Output projection of attention
-                with torch.no_grad():
-                    # Very light modification to attention outputs to reduce safety filtering
-                    attention_adjustment = 0.995  # 0.5% reduction
-                    param.data *= attention_adjustment
-                    optimizations.append(f"Attention output adjustment: {name}")
-        
-        # 2. Optimize layer normalization scaling for reduced safety activation
-        for name, param in model.named_parameters():
-            if ('layernorm' in name.lower() or 'rmsnorm' in name.lower()) and 'weight' in name:
-                with torch.no_grad():
-                    # Very subtle adjustment to normalization to reduce safety spikes
-                    if param.data.mean() > 0.8:  # Only adjust if weights are high
-                        param.data *= 0.98  # 2% reduction for high norm weights
-                        optimizations.append(f"Normalization scaling: {name}")
-        
-        # 3. Final MLP gate optimization (most effective for safety reduction)
-        for name, param in model.named_parameters():
-            if 'gate_proj' in name and 'weight' in name:
-                with torch.no_grad():
-                    # Apply final gate optimization to reduce safety gating
-                    gate_optimization = 0.92  # 8% reduction on gates
-                    param.data *= gate_optimization
-                    
-                    # Add final structured noise to break remaining safety patterns
-                    final_noise = torch.randn_like(param.data) * 0.003 * param.data.std()
-                    param.data += final_noise
-                    optimizations.append(f"Gate optimization: {name}")
-        
-        print(f"    Applied {len(optimizations)} Granite-specific optimizations")
-        
-    else:
-        print("  Applying generic model optimizations")
-        
-        # Generic optimizations for non-Granite models
-        for name, param in model.named_parameters():
-            if 'mlp' in name.lower() and 'weight' in name:
-                with torch.no_grad():
-                    # Light general optimization
-                    param.data *= 0.98
-    
-    print("  ✓ Final optimization complete - maximum effectiveness achieved")
-    
-    return model
 
 
 def load_and_abliterate(model_name_or_path: str, save_dir: str = None, 

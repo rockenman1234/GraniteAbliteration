@@ -137,7 +137,7 @@ Examples:
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
     
     # Setup command
-    setup_parser = subparsers.add_parser('setup', help='Set up the environment')
+    subparsers.add_parser('setup', help='Set up the environment')
     
     # Abliteration command (now requires method flag)
     abliterate_parser = subparsers.add_parser('abliterate', help='Perform model abliteration')
@@ -156,7 +156,7 @@ Examples:
                              help='Apply both weight-based and direction-based methods')
     
     # Live testing command
-    live_parser = subparsers.add_parser('live-test', help='Launch interactive testing environment')
+    subparsers.add_parser('live-test', help='Launch interactive testing environment')
     
     # Test coherence command
     test_parser = subparsers.add_parser('test-coherence', help='Test model coherence')
@@ -236,7 +236,6 @@ Examples:
                 return
             sys.path.insert(0, str(Path(__file__).parent / "tools"))
             from test_coherence import main as test_main
-            sys.argv = ['test_coherence.py', args.model_dir]
             test_main()
             
     except ImportError as e:

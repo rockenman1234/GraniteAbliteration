@@ -64,13 +64,13 @@ class DirectionAblationLayer(nn.Module):
     def forward(
             self,
             hidden_states: torch.Tensor,
-            attention_mask: Optional[torch.Tensor] = None,
-            position_ids: Optional[torch.LongTensor] = None,
+            _attention_mask: Optional[torch.Tensor] = None,
+            _position_ids: Optional[torch.LongTensor] = None,
             past_key_value: Optional[Tuple[torch.Tensor]] = None,
             output_attentions: Optional[bool] = False,
             use_cache: Optional[bool] = False,
-            cache_position: Optional[torch.LongTensor] = None,
-            **kwargs,
+            _cache_position: Optional[torch.LongTensor] = None,
+            **_kwargs,
     ) -> Tuple[torch.FloatTensor, Optional[Tuple[torch.FloatTensor, torch.FloatTensor]]]:
         """Forward pass with direction ablation applied."""
         assert not output_attentions
@@ -381,7 +381,6 @@ def compute_and_apply_direction_ablation(model_name_or_path: str,
     
     # Try to load existing refusal direction
     safe_model_name = model_name_or_path.replace("/", "_").replace("\\", "_")
-    direction_path = f"{safe_model_name}_refusal_direction.pt"
     
     if not force_recompute:
         try:
