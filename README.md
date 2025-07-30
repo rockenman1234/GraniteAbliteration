@@ -138,6 +138,9 @@ flowchart TD
 git clone https://github.com/rockenman1234/GraniteAbliteration.git
 cd GraniteAbliteration
 
+# Download model
+hf download ibm-granite/granite-3.3-8b-instruct --local-dir granite_original
+
 # Setup environment
 py -3.12 -m venv .venv
 .venv\Scripts\activate  # Windows (.venv/bin/activate on Linux/Mac)
@@ -148,11 +151,11 @@ git clone https://github.com/ggerganov/llama.cpp.git
 cd llama.cpp && pip install -r requirements.txt && cd ..
 ```
 
+> [!NOTE]
+> For setup instructions, [refer to the Hugging Face documentation for the `hf` (formerly huggingface-cli) tool](https://huggingface.co/docs/huggingface_hub/en/guides/cli).
+
 ## 🚀 Quick Start
 ```bash
-# Download model
-huggingface-cli download ibm-granite/granite-3.3-8b-instruct --local-dir granite_original
-
 # Basic abliteration (recommended)
 python main.py abliterate granite_original granite_abliterated 0.35
 
@@ -217,8 +220,8 @@ GraniteAbliteration/
 ├── tools/                           # Testing and utility tools
 │   ├── test_coherence.py            # Automated coherence testing (HuggingFace)
 │   ├── test_abliteration_ollama.py  # Comprehensive Ollama testing
-│   ├── validate_environment.py     # Environment validation
-│   └── quantize_granite.ps1        # GGUF quantization script
+│   ├── validate_environment.py      # Environment validation
+│   └── quantize_granite.ps1         # GGUF quantization script
 ├── misc/                            # Configuration and data files
 │   ├── harmful.txt                  # Harmful prompts for direction computation
 │   └── harmless.txt                 # Harmless prompts for baseline
