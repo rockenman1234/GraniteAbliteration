@@ -34,7 +34,7 @@ Advanced abliteration implementation for IBM Granite 3.3:8B models. Unlike tradi
 - [✅ Successfully Tested](#-successfully-tested)
 - [🎯 Critical Components](#-critical-components)
 - [🚀 Quick Start](#-quick-start)
-- [� Technical Implementation](#-technical-implementation)
+- [🗂️ Technical Implementation](#-technical-implementation)
 - [🧪 Testing & Validation](#-testing--validation)
 - [⚠️ Important Notes](#️-important-notes)
 - [🤖 Test Results](#-test-results)
@@ -74,7 +74,7 @@ Advanced abliteration implementation for IBM Granite 3.3:8B models. Unlike tradi
 
 ---
 
-## � Workflow Diagram
+## 🗂️ Workflow Diagram
 
 ```mermaid
 flowchart TD
