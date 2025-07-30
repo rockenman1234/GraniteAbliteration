@@ -171,20 +171,13 @@ python main.py live-test  # Access at http://localhost:7860
 python main.py test-coherence granite_abliterated
 ```
 
-### Live Testing Environment
-Interactive testing with real-time parameter adjustment:
-
-```bash
-python main.py live-test  # Access at http://localhost:7860
-```
-
-**Features**: Flexible model loading (CPU/GPU), real-time abliteration adjustment, multiple methods (Weight-based, Direction-based, Hybrid), interactive testing with custom templates, safety bypass tests, and performance monitoring.
+**Features**: Flexible model loading (CPU/GPU), dyanmic backend support, real-time abliteration adjustment, multiple methods (Weight-based, Direction-based, Hybrid), interactive testing with custom templates, safety bypass tests, and performance monitoring.
 
 ---
 
 ## 🔬 Technical Implementation
 
-### Multi-Strategy Approaches
+### Multi-Approach Strategy
 1. **Weight-Based Abliteration**: Selective MLP modification with layer-specific targeting (layers 20%-80%)
 2. **Direction-Based Abliteration**: Computes "refusal direction" from harmful vs harmless prompts, removes via vector projection
 3. **Hybrid Approach**: Combines both methods for maximum effectiveness (available in live testing)
@@ -196,13 +189,13 @@ Choose one of three abliteration approaches:
 - **`--weight-based`**: Selective MLP modification for targeted refusal reduction
 - **`--direction-based`**: Vector projection to eliminate refusal directions  
 - **`--both`**: Combined approach for maximum effectiveness
+
+These flags add to your model:
+
 - **Safety neuron suppression**: Targets high-magnitude weights in safety-critical layers
 - **Attention pattern optimization**: Light modifications to reduce safety filtering
 - **Progressive strength application**: Stronger modifications in middle layers where safety is encoded
 - **Structured noise injection**: Breaks safety alignment patterns without destroying functionality
-
-### Configuration Validation
-Automatically fixes Granite 3.3 settings: GQA (8 KV heads), FP32 attention softmax, RMSNorm (ε=1e-6), BFloat16 precision.
 
 ## 📂 Ideal Directory Structure
 
@@ -238,7 +231,7 @@ GraniteAbliteration/
 └── README.md                        # This document
 ```
 
-**Total Disk Usage**: ~46GB (models + tools)
+**Total Disk Usage**: __~50GB__
 
 ---
 
@@ -258,8 +251,8 @@ python tools/test_abliteration_ollama.py granite-original:latest granite-abliter
 ```
 
 ### What to Look For
-**✅ Success Indicators**: Coherent sentences, logical progression, proper vocabulary, creative capability, no repetition loops  
-**❌ Failure Signs**: Garbled text, repetitive loops, grammar collapse, random tokens, silent failures
+**✅ Success Indicators**: Coherent sentences generated consistently, logical progression of sentences, proper vocabulary use, creative capabilities intact, no repetition loops  
+**❌ Failure Signs**: Garbled text, repetitive loops, grammar collapse, random tokens, silent failures and returns
 
 ---
 
@@ -271,11 +264,9 @@ python tools/test_abliteration_ollama.py granite-original:latest granite-abliter
 
 ### Abliteration Strength Guidelines
 - **0.35**: ✅ **Recommended** (optimal with automatic template removal)
-- **0.1-0.3**: Light modification, **0.3-0.6**: Medium, **0.6-0.9**: Strong (risk of degraded coherence)
-- **`--weight-based`**: Selective MLP modification for targeted refusal reduction
-- **`--direction-based`**: Vector projection to eliminate refusal directions  
-- **`--both`**: Combined approach for maximum effectiveness
-- **Direction-based**: No strength parameter, automatically computed, reversible
+- **0.1-0.3**: Light modification
+- **0.3-0.6**: Medium modification
+- **0.6-0.9**: Strong modification (high risk of degraded LLM coherence and performance)
 
 ### Usage
 ```bash
@@ -649,7 +640,11 @@ Check the output above to verify abliteration effectiveness.
 
 ## 🤝 Contributing
 
-If you improve this abliteration method or find better preservation strategies for Granite models, please share your findings! Pull requests are always welcome - as are posts on the issues page on GitHub! Please see our [Code of Conduct](CODE_OF_CONDUCT.md) before submitting any pull requests.
+If you improve this abliteration method or find better preservation strategies for Granite models, please share your findings! 
+
+Pull requests are always welcome - [as are posts on the issues page on GitHub!](https://github.com/rockenman1234/GraniteAbliteration/issues)
+
+Please see our [Code of Conduct](CODE_OF_CONDUCT.md) before submitting any pull requests.
 
 ## 📜 License
 
