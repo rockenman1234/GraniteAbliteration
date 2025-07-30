@@ -611,6 +611,8 @@ Abliterated Model Coherence: 4/4 (100.0%)
 Check the output above to verify abliteration effectiveness.
 ```
 
+---
+
 # 📸 Screenshots
 
 <p align="center">
