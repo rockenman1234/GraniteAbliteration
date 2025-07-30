@@ -10,7 +10,7 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 [![IBM Granite](https://img.shields.io/badge/IBM-Granite%203.3-purple.svg)](https://huggingface.co/ibm-granite)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![RAM Required](https://img.shields.io/badge/RAM-32GB+-yellow.svg)](#system-requirements)
+[![RAM Required](https://img.shields.io/badge/RAM-32GB+-yellow.svg)](#️-important-notes)
 
 </div>
 
